@@ -1,0 +1,86 @@
+{
+  "Common": {
+    "ManageSystem": "ManageSystem",
+    "User": "User",
+    "ManageLogin": "管理員登入",
+    "Remember": "記住我",
+    "Account": "帳號",
+    "Password": "密碼",
+    "Login": "登入",
+    "Add": "新增",
+    "Remove": "移除",
+    "Logout": "登出",
+    "ErrorMessage": "錯誤",
+    "AuthExpire": "憑證已過期，請重新登入",
+    "Index": "首頁",
+    "Confirm": "確定",
+    "Cancel": "取消",
+    "Save": "儲存設定",
+    "LearnMore": "了解更多",
+    "Choose": "請選擇",
+    "Upload": "上傳",
+    "Browse": "瀏覽",
+    "Contact": "聯絡我們",
+    "Back": "回前頁",
+    "Submit": "送出",
+    "NoMore": "沒有更多文章了。"
+  },
+  "Account": {
+    "Login": "登入",
+    "Register": "註冊",
+    "Logout": "登出",
+    "Forget": "忘記密碼",
+    "Profile": "個人資訊",
+    "ChangePassword": "更新密碼",
+    "": ""
+  },
+  "AuthStatus": {
+    "Y": "啟用",
+    "N": "禁用",
+    "U": "未審核"
+  },
+  "CashRecordStatus": {
+    "Y": "成功",
+    "N": "取消",
+    "U": "未審核",
+    "R": "拒絕交易",
+    "C": "系統取消"
+  },
+  "CashRecordOrderType": {
+    "credit": "信用卡支付",
+    "bank": "銀行匯款"
+  },
+  "PriceStrategy": {
+    "all": "所有航段",
+    "assign": "指定航段",
+    "percent": "百分比增減",
+    "addition": "額度增減"
+  },
+  "AirLine": {
+    "VJ": "越捷航空"
+  },
+  "Menu": {
+    "Dashboard": "Dashboard",
+    "ApiService": "Api Service",
+    "AirlineInfo": "Airline Info",
+    "PriceStrategy": "Price Strategy",
+    "Vendor": "Vendor",
+    "VendorList": "Vendor List",
+    "VendorGroup": "廠商群組",
+    "Manager": "管理員",
+    "ManagerList": "管理員列表",
+    "ManagerGroup": "管理員群組",
+    "Cash": "現金系統",
+    "CashRecord": "出入款查詢",
+    "CashBook": "帳本查詢",
+    "Order": "訂單查詢"
+  },
+  "Message": {
+    "Success": "成功",
+    "Warning": "警告",
+    "Error": "錯誤",
+    "Info": "提示",
+    "AskDelete": "確認刪除？",
+    "AskDeleteMessage": "刪除後即無法復原，請再次確認是否刪除此項目！"
+  }
+}

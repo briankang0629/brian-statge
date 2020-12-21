@@ -1,0 +1,5 @@
+config.php
+view/cache
+.DS_Store
+.idea
+/vendor

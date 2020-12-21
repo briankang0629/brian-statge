@@ -1,0 +1,24 @@
+{
+    "name": "briankang/backstage",
+    "authors": [
+        {
+            "name": "BrianKang",
+            "email": "qweasdzxc123090@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "libraries",
+            "engine",
+            "app/controller",
+            "app/models",
+            "app/middleware",
+            "vendor"
+        ]
+    },
+    "require": {
+        "bramus/router": "~1.0",
+        "google/apiclient": "^2.8",
+        "mongodb/mongodb": "^1.8"
+    }
+}
