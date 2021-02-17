@@ -103,6 +103,11 @@
         "productCategory": "商品分類",
         "status": "狀態",
         "createTime": "創建時間",
+        "detail": "詳細資料",
+        "description": "商品描述",
+        "metaTitle": "網頁標題",
+        "metaKeyword": "網頁關鍵字",
+        "metaDescription": "網頁描述",
         "operate": "操作",
         "create": "新增商品",
         "edit": "修改商品",
@@ -110,7 +115,29 @@
         "image": "圖片",
         "startDate": "開始日期",
         "endDate": "結束日期",
+        "basic": "基本設定",
+        "imageSetting": "圖片設定",
+        "productOption": "商品選項",
+        "productSpecification": "商品規格",
+        "selectMsg": "請選擇",
+        "sortOrder": "排序",
         "": ""
+    },
+    "productOption": {
+        "manageOption": "管理選項",
+        "optionValueName": "選項值名稱",
+        "optionName": "選項名稱",
+        "quantity": "庫存量",
+        "isStock": "扣減庫存",
+        "optionPrice": "選項加價",
+        "returnPoint": "回饋點數",
+        "weight": "重量",
+        "gram": "公克",
+        "operate": "操作",
+        "optionRequired": "此選項必填"
+    },
+    "productSpecification": {
+
     },
     "logRecord": {
         "logRecordId": "操作日誌ID",
@@ -143,6 +170,10 @@
         "Y": "啟用",
         "N": "禁用",
         "U": "未審核"
+    },
+    "enable": {
+        "Y": "啟用",
+        "N": "禁用"
     },
     "sub": {
         "Y": "是",
@@ -222,6 +253,15 @@
         "size": "檔案大小",
         "extension": "副檔名",
         "createTime": "新增時間",
+        "pleaseSelectImage": "請選擇圖片",
+        "pleaseUploadImage": "請按下上傳按鈕來上傳圖片",
+        "pleaseUploadImageNote": "請注意，上傳圖片後將取代原本圖片",
+        "representImage": "代表圖片",
+        "additionImage": "附加圖片",
+        "selectImageFromFolder": "圖庫選擇圖片",
+        "selectImageFromFolderNote": "圖庫內的圖片皆是從多媒體->圖片管理中取得",
+        "uploadNewImage": "上傳新圖片",
+        "gallery": "圖庫",
         "": ""
     },
     "message": {

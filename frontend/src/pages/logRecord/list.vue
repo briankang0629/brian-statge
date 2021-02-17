@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="logRecord-list">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -188,15 +188,15 @@
                                         <span class="" id="remoteIP">{{ logRecord.remoteIP }}</span>
                                     </div>
                                 </div>
-                                <div class="form-group row text-left">
-                                    <label for="content" class="col-sm-3">{{ $t('logRecord.content') }} : </label>
-                                    <div class="col-sm-9">
-                                        <span class="" id="content" v-for=" (value,key) in logRecord.content"
-                                              :key="key">
-                                            {{ key }} : {{ value }}  <hr style="color:#999;"/>
-                                        </span>
-                                    </div>
-                                </div>
+                                <!--<div class="form-group row text-left">-->
+                                    <!--<label for="content" class="col-sm-3">{{ $t('logRecord.content') }} : </label>-->
+                                    <!--<div class="col-sm-9">-->
+                                        <!--<span class="" id="content" v-for=" (value,key) in logRecord.content"-->
+                                              <!--:key="key">-->
+                                            <!--{{ key }} : {{ value }}  <hr style="color:#999;"/>-->
+                                        <!--</span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
                                 <div class="form-group row text-left">
                                     <label for="host" class="col-sm-3">{{ $t('logRecord.host') }} : </label>
                                     <div class="col-sm-9">
@@ -332,7 +332,7 @@
                     this.pagination.totalPage = response.pagination.totalPage
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -351,7 +351,7 @@
                 this.$store.dispatch('authRequest', request).then((response) => {
                     this.logRecordSetting = response.data;
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -375,14 +375,9 @@
                     this.logRecord.name = this.logRecordSetting[this.logRecord.logId]['class'];
 
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-</style>

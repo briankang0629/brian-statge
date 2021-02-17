@@ -39,9 +39,6 @@ class UserGroupModel extends Model {
 	    'userGroupId' , 'name' , 'description' , 'createTime' , 'updateTime'
 	];
 
-	/** @var array 關連欄位 */
-	public $relateWith = [];
-
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'userGroupId';
 
@@ -64,7 +61,10 @@ class UserGroupModel extends Model {
 		$this->makePagination($this->primaryKey , $data , $where);
 
 		//回傳
-		return $this->db->table($this->table)->select($this->filed)->where($where , true)->orderBy('userGroupId' , 'ASC' , true)->limit($this->pagination->start , $this->pagination->perPage)->rows;
+		return $this->db->table($this->table)->select($this->filed)
+			->where($where , true)
+			->orderBy('userGroupId' , 'ASC' , true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows;
 	}
 
 	/**

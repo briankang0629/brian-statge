@@ -1,0 +1,22 @@
+/**
+ * 權限 客制化 CSS
+ *
+ * @since 0.0.1
+ * @version 0.0.1
+ * @author Brian
+ * @date 2021/01/07
+ */
+
+
+//權限編輯
+#permission-edit {
+	.permission-setting li {
+		list-style-type: square;
+	}
+
+	.permission-setting {
+		.card-header {
+			padding: 0.25rem !important;
+		}
+	}
+}

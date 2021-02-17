@@ -39,14 +39,6 @@ class UserModel extends Model {
 		'userId' , 'userGroupId' , 'name' , 'account' , 'email' , 'mobile', 'createTime' , 'updateTime' , 'status'
 	];
 
-	/** @var array 關連欄位 */
-	public $relateWith = [
-		'userGroup' => [
-			'filed' => ['userGroup.name AS userGroup' , 'userGroup.description'] ,
-			'join' => ['table' => 'userGroup' , 'joinKey' => 'userGroupId'] ,
-		] ,
-	];
-
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'userId';
 
@@ -76,13 +68,20 @@ class UserModel extends Model {
 		}
 
 		//合併關聯欄位
-		$this->makeMerge('userGroup');
+		$this->filed = $this->makeMerge([
+			'ug.name AS userGroup' ,
+			'ug.description'
+		]);
 
 		//宣告頁碼class
 		$this->makePagination($this->primaryKey , $data , $where);
 
 		//回傳
-		return $this->db->table($this->table)->select($this->filed)->join('userGroup' , 'userGroupId')->where($where , true)->orderBy('userId' , 'ASC' , true)->limit($this->pagination->start , $this->pagination->perPage)->rows;
+		return $this->db->table($this->table)->select($this->filed)
+			->join('userGroup ug' , 'userGroupId')
+			->where($where , true)
+			->orderBy('userId' , 'ASC' , true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows;
 	}
 
 	/**
@@ -95,10 +94,15 @@ class UserModel extends Model {
 	 */
 	public function info( $userId ) {
 		//合併關聯欄位
-		$this->makeMerge('userGroup');
+		$this->filed = $this->makeMerge([
+			'ug.name AS userGroup' ,
+			'ug.description'
+		]);
 
 		//回傳
-		return $this->db->table($this->table)->select($this->filed)->join('userGroup' , 'userGroupId')->where(['userId' , '=' , $userId])->row;
+		return $this->db->table($this->table)->select($this->filed)
+			->join('userGroup ug' , 'userGroupId')
+			->where(['userId' , '=' , $userId])->row;
 	}
 
 	/**

@@ -1,0 +1,84 @@
+/**
+ * 商品 客制化 CSS
+ *
+ * @since 0.0.1
+ * @version 0.0.1
+ * @author Brian
+ * @date 2021/01/07
+ */
+
+//商品清單
+#product-list {
+	.card-body {
+		.product-image {
+			> img {
+				width: 50px;
+				height: 50px;
+			}
+		}
+	}
+
+	.card-title {
+		font-size: 14px;
+	}
+}
+
+
+//商品編輯頁
+#product-edit {
+	.nav-link {
+		font-size: 14px;
+		.active {
+			font-size: 14px;
+		}
+	}
+
+	.ck-content {
+		height:300px;
+	}
+
+	/** 圖片縮圖 */
+	.img-thumbnail {
+		padding: .25rem;
+		background-color: #ebedef;
+		border: 1px solid #c4c9d0;
+		border-radius: .25rem;
+		height: 100px;
+		-o-object-fit: cover;
+		object-fit: cover;
+	}
+
+	/** 選擇圖片游標 */
+	.img-thumbnail:hover {
+		cursor: pointer;
+	}
+
+	//手機版情況下的編輯內頁內距調整
+	@media (max-width: 414px) {
+		.card-body {
+			padding: 0.5rem!important;
+		}
+
+		.default-image:first-child {
+			padding: 0 20px;
+			display: block;
+			margin-left: 0!important;
+		}
+
+		.default-image:nth-child(2) {
+			padding: 0 10px 20px 20px;
+			display: block;
+			margin-left: 0!important;
+		}
+
+		.default-image img {
+			width: 100% !important;
+		}
+
+		.profile-pic {
+			.vue-file-agent {
+				width: 100%!important;
+			}
+		}
+	}
+}

@@ -207,7 +207,7 @@ class PermissionController extends Controller
      * @return mixed
      */
     public function getPermissionConfig() {
-        return publicFunction::json([
+        publicFunction::json([
             'status' => 'success',
             'data' => publicFunction::getSystemCode()['permission'],
         ]);

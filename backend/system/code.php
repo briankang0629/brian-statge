@@ -73,6 +73,8 @@ return [
 		17 => ['type' => 'A', 'class' => 'createProduct'],
 		18 => ['type' => 'A', 'class' => 'updateProduct'],
 		19 => ['type' => 'A', 'class' => 'deleteProduct'],
+		20 => ['type' => 'A', 'class' => 'deleteProductOption'],
+		21 => ['type' => 'A', 'class' => 'deleteProductOptionValue'],
 	],
 	//系統預設語系
 	'defaultLanguage' => 'zh-tw',

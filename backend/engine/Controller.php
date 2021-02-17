@@ -130,7 +130,7 @@ abstract class Controller {
 	 * @param int $logId 操作類型ID
 	 * @param array $content 操作者內容
 	 * @param string|array $sql SQL語法
-	 * @todo
+	 * @todo 需改版SQL
 	 */
 	protected function writeLog( $logId , $content = [] , $sql = '' ) {
 		//宣告

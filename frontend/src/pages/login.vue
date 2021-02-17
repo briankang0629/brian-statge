@@ -43,9 +43,9 @@
 						</div>
 						<hr/>
 						<div class="social-auth-links text-center mb-3">
-							<a href="#" class="btn btn-block btn-primary">
-								<i class="fab fa-facebook mr-2"></i> Facebook 登入
-							</a>
+							<!--<a href="#" class="btn btn-block btn-primary">-->
+								<!--<i class="fab fa-facebook mr-2"></i> Facebook 登入-->
+							<!--</a>-->
 							<a href="#" class="btn btn-block btn-danger" @click="loginGoogle()">
 								<i class="fab fa-google-plus mr-2"></i> Google 登入
 							</a>
@@ -76,20 +76,18 @@
 			}).catch(() => {
 				localStorage.removeItem('auth');
 				// //取前一頁網址 判訂第三方登入失敗
-				if (this.$router.history._startLocation.substring(0, 12) == '/auth/google') {
-					this.$Swal.fire({
-						icon: 'error',
-						title: this.$t('common.failed'),
-						text: 'Google 登入失敗',
-						confirmButtonText: 'OK',
-					})
-				} else if (this.$router.history._startLocation.substring(0, 13) == '/auth/facebook') {
-					this.$Swal.fire({
-						icon: 'error',
-						title: this.$t('common.failed'),
-						text: 'Facebook 登入失敗',
-						confirmButtonText: 'OK',
-					})
+				if (this.$router.history._startLocation.substring(0, 12) === '/auth/google') {
+                    this.$notify({
+                        type:'error',
+                        title: this.$t('common.failed'),
+                        text: 'Google 登入失敗',
+                    })
+				} else if (this.$router.history._startLocation.substring(0, 13) === '/auth/facebook') {
+                    this.$notify({
+                        type:'error',
+                        title: this.$t('common.failed'),
+                        text: 'Facebook 登入失敗',
+                    })
 				}
 			})
 
@@ -118,12 +116,18 @@
 			 * @version 0.0.1
 			 */
 			login() {
-				let data = this.qs.stringify(this.user);
-				this.axios.post('/api/login', data).then(response => {
-					if (response.data.status == 'success') {
+				const request = {
+					method:  'post',
+					url: '/api/login',
+					data: this.qs.stringify(this.user)
+				}
+
+				//請求
+				this.$store.dispatch('request', request).then((response) => {
+					if (response.status === 'success') {
 						//set localStorage
 						localStorage.setItem('auth', JSON.stringify({
-							token: response.data.token,
+							token: response.token,
 							account: this.user.account,
 							name: this.user.name
 						}))
@@ -131,7 +135,7 @@
 						localStorage.setItem('language', 'zh-tw')
 
 						//權限存localStorage
-						localStorage.setItem('permission', JSON.stringify(response.data.permission))
+						localStorage.setItem('permission', JSON.stringify(response.permission))
 
 						//若要記住帳號
 						if (this.rememberAccount) {
@@ -140,21 +144,13 @@
 							localStorage.removeItem('account')
 						}
 
-						this.$Swal.fire({
-							icon: response.data.status,
-							title: this.$t('common.success'),
-							text: response.data.msg,
-							confirmButtonText: 'OK',
-						}).then(() => {
-							window.location.href = '/';
-						});
+						//轉跳首頁
+						this.$router.push('/').then(() => { this.$root.notify(response) })
+
 					}
 				}).catch(error => {
-					this.$Swal.fire({
-						icon: error.response.data.status,
-						title: this.$t('common.failed'),
-						text: error.response.data.msg,
-					})
+					this.$root.notify(error)
+
 					this.account = '';
 					this.password = '';
 				})
@@ -168,18 +164,20 @@
 			 * @version 0.0.1
 			 */
 			loginGoogle() {
-				this.axios.post('/api/login/google').then(response => {
-					if (response.data.status == 'success') {
+				const request = {
+					method:  'post',
+					url: '/api/login/google',
+				}
+
+				//請求
+				this.$store.dispatch('request', request).then((response) => {
+					if (response.status === 'success') {
 						//預設繁體中文
 						localStorage.setItem('language', 'zh-tw')
-						location.href = response.data.url
+						location.href = response.url
 					}
-				}).catch(error => {
-					this.$Swal.fire({
-						icon: error.response.data.status,
-						title: this.$t('common.failed'),
-						text: error.response.data.msg,
-					})
+				}).catch((error) => {
+					this.$root.notify(error)
 				})
 			},
 		}

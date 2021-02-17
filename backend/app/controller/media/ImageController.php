@@ -88,14 +88,14 @@ class ImageController extends Controller {
 
 		//規則
 		$require = [
-			'folder' => 'required|string' ,
+			'folder' => 'string' ,
 		];
 
 		//允許的副檔名
 		$filterExtension = ['jpg' , 'jpeg' , 'png' , 'gif' , 'heif'];
 
 		//驗證
-        $folder = request::$server['HTTP_FOLDER'];
+        $folder = isset(request::$server['HTTP_FOLDER']) ? request::$server['HTTP_FOLDER'] : 'default';
 		validator::make(['folder' => $folder], $require);
 
 		//先取得附檔名
@@ -122,8 +122,8 @@ class ImageController extends Controller {
 		}
 
 		//組成檔名
-		$randonName = publicFunction::token();
-		$fileName = $randonName . '.' . $extension;
+		$randomName = publicFunction::token();
+		$fileName = $randomName . '.' . $extension;
 
 		// 取得圖片大小
 		$imageInfo = getimagesize(request::$files["file"]["tmp_name"]);
@@ -152,7 +152,7 @@ class ImageController extends Controller {
 
 		//傳送參數
 		$sentData = [
-			'fileName' => $randonName ,
+			'fileName' => $randomName ,
 			'originName' => request::$files["file"]['name'] ,
 			'type' => 'image' ,
 			'extension' => $extension ,
@@ -166,13 +166,18 @@ class ImageController extends Controller {
 		//執行更新
 		$mediaModel->store($sentData);
 
+		//上傳ID
+		$uploadId = $mediaModel->db->getLastId();
+
 		//操作記錄
 		$this->writeLog(14 , $sentData , $mediaModel->db->getSql());
 
 		//回傳
 		publicFunction::json([
-			'status' => 'success' ,
-			'msg' => language::getFile()['common']['upload']['success'] ,
+            'status' => 'success' ,
+            'msg' => language::getFile()['common']['upload']['success'] ,
+			'uploadId' => $uploadId,
+            'picture' => IMAGE_URL . $folder . '/' . $extension . '/' . $fileName
 		]);
 	}
 

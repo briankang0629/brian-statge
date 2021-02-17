@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="admin-list">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -249,7 +249,7 @@
                     this.pagination.totalPage = response.pagination.totalPage
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -268,7 +268,7 @@
                 this.$store.dispatch('authRequest', request).then((response) => {
                     this.permission = response.data;
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -279,19 +279,17 @@
              * @version 0.0.1
              */
             remove() {
-                //詢問刪除
-                this.$Swal.fire({
-                    title: this.$t('message.askDelete'),
-                    text: this.$t('message.askDeleteMessage'),
-                    icon: 'warning',
-                    confirmButtonText: this.$t('common.confirm'),
-                    cancelButtonText: this.$t('common.cancel'),
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    showCancelButton: true,
-                    reverseButtons: true
-                }).then((result) => {
+	            let askSetting = {
+		            title: this.$t('message.askDelete'),
+		            text: this.$t('message.askDeleteMessage'),
+		            confirmText: this.$t('common.confirm'),
+		            cancelText: this.$t('common.cancel'),
+	            }
+
+	            //詢問刪除
+	            this.$Swal.ask(askSetting).then((result) => {
                     if (result.isConfirmed) {
+                        this.isLoading = true
                         let adminId = this.selected.join(',')
                         //請求刪除
                         const request = {
@@ -301,19 +299,11 @@
 
                         //請求刪除前驗證
                         this.$store.dispatch('authRequest', request).then((response) => {
-                            this.$Swal.fire({
-                                icon: 'success',
-                                title: this.$t('message.success'),
-                                text: response.msg
-                            })
-
+	                        this.$root.notify(response)
                             this.getAdmin()
                         }).catch((error) => {
-                            this.$Swal.fire({
-                                icon: 'error',
-                                title: this.$t('message.error'),
-                                text: error.msg
-                            })
+	                        this.$root.notify(error)
+                            this.isLoading = false
                         })
                     }
                     //請空選擇
@@ -324,13 +314,3 @@
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-
-    .admin-image > img {
-        width: 50px;
-        height: 50px;
-    }
-</style>

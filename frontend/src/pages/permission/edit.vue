@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="permission-edit">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -74,7 +74,7 @@
                                         <router-link :to="{ name: 'permission'}" class="btn bg-danger mr-3">
                                             <i class="fas fa-reply"></i> {{ $t('common.back') }}
                                         </router-link>
-                                        <b-button type="button" class="btn btn-success" @click="save()">
+                                        <b-button type="button" class="btn btn-success" @click="save()" v-if="controlPermission === 'E'">
                                             <i class="fas fa-pen-nib"></i>  {{ $t('common.' + method) }}
                                         </b-button>
                                     </div>
@@ -167,7 +167,7 @@
                     this.permission.permission = this.permissionConfig
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                     this.isLoading = false
                 })
             },
@@ -191,7 +191,7 @@
 
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                     this.isLoading = false
                 })
             },
@@ -210,20 +210,9 @@
                 }
 
                 this.$store.dispatch('authRequest', request).then((response) => {
-                    this.$Swal.fire({
-                        icon: 'success',
-                        title: this.$t('message.success'),
-                        text: response.msg
-                    }).then(() => {
-                        this.$router.push({ name : 'permission'})
-                    })
-
+                    this.$router.push({ name : 'permission'}).then(() => { this.$root.notify(response) })
                 }).catch((error) => {
-                    this.$Swal.fire({
-                        icon: 'error',
-                        title: this.$t('message.error'),
-                        text: error.msg
-                    })
+	                this.$root.notify(error)
                 })
             },
 
@@ -256,19 +245,11 @@
 
                         //請求刪除前驗證
                         this.$store.dispatch('authRequest', request).then((response) => {
-                            this.$Swal.fire({
-                                icon: 'success',
-                                title: this.$t('message.success'),
-                                text: response.msg
-                            })
+	                        this.$root.notify(response)
 
                             this.getPermission()
                         }).catch((error) => {
-                            this.$Swal.fire({
-                                icon: 'error',
-                                title: this.$t('message.error'),
-                                text: error.msg
-                            })
+	                        this.$root.notify(error)
                         })
                     }
                     //請空選擇
@@ -278,13 +259,3 @@
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-
-    .permission-setting li {
-        /*list-style: none;*/
-        list-style-type: square;
-    }
-</style>

@@ -42,9 +42,6 @@ class LogRecordModel extends Model {
 		'sqlString', 'newDate', 'createTime', 'updateTime'
 	];
 
-	/** @var array 關連欄位 */
-	public $relateWith = [];
-
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'logRecordId';
 
@@ -96,7 +93,9 @@ class LogRecordModel extends Model {
 		$this->makePagination($this->primaryKey , $data , $where);
 
 		//回傳
-		return $this->makeCast($this->db->table($this->table)->select($this->filed)->where($where, true)->limit($this->pagination->start , $this->pagination->perPage)->rows);
+		return $this->makeCast($this->db->table($this->table)->select($this->filed)
+			->where($where, true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows);
 	}
 
 	/**

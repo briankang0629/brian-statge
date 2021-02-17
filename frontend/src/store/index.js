@@ -73,6 +73,33 @@ export default new Vuex.Store({
 		},
 
 		/**
+		 * request 無token狀態請求
+		 *
+		 * @since 0.0.1
+		 * @version 0.0.1
+		 */
+		request({state}, request) {// eslint-disable-line no-unused-vars
+			let sentData = {
+				method: request.method,
+				url: request.url,
+			}
+
+			if (request.method === 'get') {
+				sentData.params = request.params
+			}
+			if ((request.method === 'post') || (request.method === 'put')) {
+				sentData.data = request.data
+			}
+			return new Promise((resolve, reject) => {
+				axios.request(sentData).then(({data}) => {
+					resolve(data);
+				}).catch(({response}) => {
+					reject(response.data)
+				})
+			})
+		},
+
+		/**
 		 * checkAuthGoogle Google登入用
 		 *
 		 * @since 0.0.1

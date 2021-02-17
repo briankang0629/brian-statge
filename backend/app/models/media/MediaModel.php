@@ -38,9 +38,6 @@ class MediaModel extends Model {
 		'uploadId' , 'fileName' , 'originName' , 'type' , 'extension' , 'size' , 'height' , 'width' , 'folder' , 'createTime'
 	];
 
-	/** @var array 關連欄位 */
-	public $relateWith = [];
-
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'uploadId';
 
@@ -142,6 +139,31 @@ class MediaModel extends Model {
 	}
 
 	/**
+	 * getMediaRelated 取多媒體關連的資料
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param int $id
+	 * @param string $type
+	 * @return mixed
+	 */
+	public function getMediaRelated( $id, $type ) {
+		$data = [];
+		$medias = $this->db->table('uploadRelated')
+			->select(['uploadId','sortOrder'])
+			->join('upload', 'uploadId')
+			->where([$type . 'Id' , '=' , $id], true)
+            ->orderBy('sortOrder', 'ASC')->rows;
+
+		foreach($medias as $media) {
+			$media['picture'] = $this->getMedia($media['uploadId']);
+			$data[] = $media;
+		}
+
+		return $data;
+	}
+
+	/**
 	 * getMediaFolder 取資料夾
 	 *
 	 * @since 0.0.1
@@ -184,5 +206,49 @@ class MediaModel extends Model {
     public function storeFolder( $data ) {
         return $this->db->table('uploadFolder')->insert($data);
     }
+
+	/**
+	 * updateMediaRelated 執行更新多媒體關連的資料
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param int $id
+	 * @param string $type
+	 * @param array $data
+	 * @return mixed
+	 */
+	public function updateMediaRelated( $id, $type, $data = array() ) {
+		if(!$this->db->table('uploadRelated')->delete()->where([$type . 'Id' , '=' , $id])) {
+			return false;
+		}
+
+        if(count($data) < 1) {
+            return true;
+        }
+
+		foreach($data as $item) {
+			if(!$this->db->table('uploadRelated')->insert([
+				$this->primaryKey => $item['uploadId'] ,
+				$type . 'Id' => $id,
+                'sortOrder' => $item['sortOrder'] ,
+			])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * deleteRelatedUpload 刪除關聯多媒體資料
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param array $where
+	 * @return mixed
+	 */
+	public function deleteRelatedUpload( $where ) {
+		return $this->db->table('uploadRelated')->delete()->where($where);
+	}
 	//E == 客製化區塊 ========================================//
 }

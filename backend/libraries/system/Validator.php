@@ -76,7 +76,7 @@ class Validator
 	    self::$language['common'][$key] = isset(self::$language['common'][$key]) ? self::$language['common'][$key] : $key;//防報錯 無此設定字典擋欄位
         switch ($rule) {
             case 'required':
-                if (empty($data[$key])) {
+                if (!isset($data[$key])) {
                     self::$errorCode = '0006';
                     self::$errorMsg = sprintf(self::$language['error']['0006'], self::$language['common'][$key]);
                     return false;

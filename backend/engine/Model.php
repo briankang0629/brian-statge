@@ -19,9 +19,6 @@ abstract class Model {
 	/** @var string table 資料表 */
 	protected $table;
 
-	/** @var array $relateWith 關連欄位 */
-	protected $relateWith;
-
     /** @var array $casts 要轉換格式的欄位 */
     protected $casts;
 
@@ -38,6 +35,52 @@ abstract class Model {
 		//啟用DB連線
 		$this->db = DB::getInitialize();
 	}
+
+    /**
+     * lists 取列表
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param $data
+     * @return mixed
+     */
+	abstract protected function lists( $data );
+
+    /**
+     * info 取指定ID的資料
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param $id
+     * @return mixed
+     */
+	abstract protected function info( $id );
+
+    /**
+     * store 存取資料
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param $data
+     * @return mixed
+     */
+	abstract protected function store( $data );
+
+    /**
+     * update 更新指定Id的資料
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param $id
+     * @param $data
+     * @return mixed
+     */
+	abstract protected function update( $id , $data );
+
+    /**
+     * delete 刪除指定資料
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param $where
+     * @return mixed
+     */
+	abstract protected function delete( $where );
 
 	/**
 	 * item 取單筆資料
@@ -80,10 +123,13 @@ abstract class Model {
 	 * @param string $table 資料表
 	 * @param string $field 欄位
 	 * @param array $where WHERE 條件
+     * @param boolean|string $groupBy
 	 * @return bool
 	 */
-	public function count( $table , $field , $where ) {
-		return (int)$this->db->table($table)->select("COUNT(" . $field . ") AS total")->where($where)->row['total'];
+	public function count( $table , $field , $where , $groupBy = false) {
+		return $groupBy ?
+            (int)$this->db->table($table)->select($field)->where($where , true)->groupBy($groupBy)->count :
+            (int)$this->db->table($table)->select("COUNT(" . $field . ") AS total")->where($where)->row['total'];
 	}
 
 	/**
@@ -94,13 +140,18 @@ abstract class Model {
 	 * @param string $field 欄位
 	 * @param array $where WHERE 條件
 	 * @param array $join JOIN資料
-	 * @return bool
+     * @param boolean|string $groupBy
+	 * @return integer
 	 */
-	public function countWithJoin( $field , $where , $join = [] ) {
+	public function countWithJoin( $field , $where , $join = [] , $groupBy = false) {
 		if(!isset($join['table'])) {
-			return (int)$this->db->table($this->table)->select("COUNT(" . $field . ") AS total")->joinWithMany($join)->where($where)->row['total'];
+			return $groupBy ?
+                (int)$this->db->table($this->table)->select($field)->joinWithMany($join)->where($where , true)->groupBy($groupBy)->count :
+                (int)$this->db->table($this->table)->select("COUNT(" . $field . ") AS total")->joinWithMany($join)->where($where)->row['total'];
 		} else {
-			return (int)$this->db->table($this->table)->select("COUNT(" . $field . ") AS total")->join($join['table'] , $join['joinKey'])->where($where)->row['total'];
+			return $groupBy ?
+                (int)$this->db->table($this->table)->select($field)->join($join['table'] , $join['joinKey'])->where($where , true)->groupBy($groupBy)->count :
+                (int)$this->db->table($this->table)->select("COUNT(" . $field . ") AS total")->join($join['table'] , $join['joinKey'])->where($where)->row['total'];
 		}
 	}
 
@@ -127,25 +178,15 @@ abstract class Model {
 	 *
      * @since 0.0.1
      * @version 0.0.1
-	 * @param array $tables
+	 * @param array $filed
 	 * @return array
 	 */
-	protected function makeMerge( $tables = [] ) {
-		if(!is_array($tables)) {
-			$this->filed = array_merge($this->filed , $this->relateWith[$tables]['filed']);
-		} else {
-			//宣告
-			$relate = [];
-
-			//合併欄位
-			foreach($tables as $key => $table) {
-				$this->filed = array_merge($this->filed , $this->relateWith[$table]['filed']);
-				$relate[] = $this->relateWith[$table]['join'];
-			}
-
-			//回傳結果
-			return $relate;
+	protected function makeMerge( $filed = array() ) {
+		if(is_array($filed)) {
+			return array_merge($this->filed , $filed);
 		}
+
+		return $this->filed;
 	}
 
     /**
@@ -186,6 +227,9 @@ abstract class Model {
                     case 'string':
                         $data[$key][$field] = (string)$data[$key][$field];
                         break;
+                    case 'double':
+                        $data[$key][$field] = (double)$data[$key][$field];
+                        break;
                     case 'array':
                     case 'json':
                         $data[$key][$field] = json_decode($data[$key][$field], true);
@@ -209,18 +253,18 @@ abstract class Model {
 	 * @param array $data 傳送參數
 	 * @param array $where WHERE 條件
 	 * @param array $join JOIN 條件
+	 * @param boolean|string $groupBy groupBy 條件
 	 */
-	protected function makePagination( $primaryKey, $data = array() , $where , $join = array()) {
+	protected function makePagination( $primaryKey, $data , $where , $join = array() , $groupBy = false) {
 		//宣告頁碼
 		$this->pagination = new Pagination($data);
 
 		//計算資料總數 先判定是否有JOIN
         if($join) {
-            $this->pagination->total = $this->countWithJoin($primaryKey , $where , $join);
+            $this->pagination->total = $this->countWithJoin($primaryKey , $where , $join , $groupBy);
         } else {
-            $this->pagination->total = $this->count($this->table , $primaryKey , $where);
+            $this->pagination->total = $this->count($this->table , $primaryKey , $where ,$groupBy);
         }
-
 	}
 
 	/**

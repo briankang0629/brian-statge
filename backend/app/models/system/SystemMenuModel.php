@@ -35,11 +35,8 @@ class SystemMenuModel extends Model {
 
 	/** @var array 預設欄位 */
 	protected $filed = [
-		'systemMenuId' , 'parentId' , 'code' , 'route', 'status'
+		'systemMenuId' , 'parentId' , 'code' , 'route', 'icon', 'status'
 	];
-
-	/** @var array 關連欄位 */
-	public $relateWith = [];
 
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'systemMenuId';
@@ -60,7 +57,9 @@ class SystemMenuModel extends Model {
             $where[] = ['status' , '=' , $data['status']];
         }
 
-		return $this->db->table($this->table)->select($this->filed)->where($where, true)->orderBy($this->primaryKey , 'ASC')->rows;
+		return $this->db->table($this->table)->select($this->filed)
+			->where($where, true)
+			->orderBy($this->primaryKey , 'ASC')->rows;
 	}
 
 	/**

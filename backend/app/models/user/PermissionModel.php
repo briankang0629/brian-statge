@@ -39,9 +39,6 @@ class PermissionModel extends Model {
 		'permissionId'  , 'name' , 'permission', 'createTime' , 'updateTime' , 'status'
 	];
 
-	/** @var array 關連欄位 */
-	public $relateWith = [];
-
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'permissionId';
 
@@ -80,7 +77,10 @@ class PermissionModel extends Model {
 		$this->makePagination($this->primaryKey , $data , $where);
 
 		//回傳
-		return $this->makeCast($this->db->table($this->table)->select($this->filed)->where($where , true)->orderBy('permissionId' , 'ASC' , true)->limit($this->pagination->start , $this->pagination->perPage)->rows);
+		return $this->makeCast($this->db->table($this->table)->select($this->filed)
+			->where($where , true)
+			->orderBy('permissionId' , 'ASC' , true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows);
 	}
 
 	/**

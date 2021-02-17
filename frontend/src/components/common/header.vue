@@ -43,37 +43,27 @@
         },
         methods: {
             logout() {
-                let header = {
-                    headers: {
-                        'Authorization': JSON.parse(localStorage.getItem('auth')).token,
-                    }
+                //請求參數設定
+                const request = {
+                    method: 'post',
+                    url: '/api/logout',
                 }
-                this.axios.post('/api/logout', {},  header).then(response => {
-                    if (response.data.status == 'success') {
+
+                //請求
+                this.$store.dispatch('authRequest', request).then((response) => {
+                    if (response.status === 'success') {
                         //unset localStorage
                         localStorage.removeItem('auth');
 
                         //unset localStorage
                         localStorage.removeItem('permission')
 
-                        this.$Swal.fire({
-                            icon: response.data.status,
-                            title: '成功',
-                            text: response.data.msg,
-                            confirmButtonText: 'OK',
-                        }).then(() => {
-                            window.location.href = '/login';
-                        });
+                        //轉跳登入頁
+	                    this.$router.push('/login').then(() => { this.$root.notify(response) })
+
                     }
-                }).catch(error => {
-                    this.$Swal.fire({
-                        icon: error.response.data.status,
-                        title: '失敗',
-                        text: error.response.data.msg,
-	                    confirmButtonText: 'OK',
-                    }).then(() => {
-	                    window.location.href = '/login';
-                    });
+                }).catch((error) => {
+                    this.$root.notify(error)
                 })
             }
         }

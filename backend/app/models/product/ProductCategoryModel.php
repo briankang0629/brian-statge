@@ -37,28 +37,18 @@ class ProductCategoryModel extends Model {
 
 	/** @var array 預設欄位 */
 	protected $filed = [
-		'productCategoryId' , 'status', 'sortOrder', 'createTime' , 'updateTime'
+		'productCategoryId' , 'parentId', 'status', 'sortOrder', 'createTime' , 'updateTime'
 	];
-
-    /** @var array 關連欄位 */
-    public $relateWith = [
-        'productCategoryDetail' => [
-            'filed' => [
-                'productCategoryDetail.name AS name' ,
-                'productCategoryDetail.language AS language'
-            ] ,
-            'join' => [
-                'table' => 'productCategoryDetail' ,
-                'joinKey' => 'productCategoryId'
-            ] ,
-        ] ,
-    ];
 
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'productCategoryId';
 
     /** @var array $cast 主鍵 */
-    protected $casts = [];
+    protected $casts = [
+        'productCategoryId' => 'integer',
+        'parentId' => 'integer',
+        'sortOrder' => 'integer',
+    ];
 
 	/**
 	 * Lists 取會員列表
@@ -89,14 +79,24 @@ class ProductCategoryModel extends Model {
 			$where[] = ['status' , '=' , $data['status']];
 		}
 
-        //組關聯要的欄位
-        $this->makeMerge('productCategoryDetail');
+		//欄位設定
+		$this->filed = $this->makeMerge([
+	        'pcd.name' ,
+			'pcd.language'
+        ]);
 
         //宣告頁碼class
-        $this->makePagination($this->primaryKey , $data , $where , $this->relateWith['productCategoryDetail']['join']);
+        $this->makePagination($this->primaryKey , $data , $where , [
+	        ['table' => 'productCategoryDetail', 'joinKey' => 'productCategoryId'],
+        ]);
 
 		//回傳
-		return $this->db->table($this->table)->select($this->filed)->join('productCategoryDetail' , $this->primaryKey)->where($where , true)->orderBy('productCategoryId' , 'ASC' , true)->limit($this->pagination->start , $this->pagination->perPage)->rows;
+		return $this->makeCast($this->db->table($this->table)->select($this->filed)
+			->join('productCategoryDetail pcd' , $this->primaryKey)
+			->where($where , true)
+			->orderBy('level' , 'ASC' , true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows
+		);
 	}
 
 	/**
@@ -162,15 +162,16 @@ class ProductCategoryModel extends Model {
     }
 
     /**
-     * getProductCategoryIdByAdminId 依管理者ID取商品分類ID
+     * getProductByProductCategoryId 依商品分類ID取商品數量
      *
      * @since 0.0.1
      * @version 0.0.1
-     * @param int $adminId
+     * @param int $productCategoryId
      * @return mixed
      */
-    public function getProductCategoryIdByAdminId( $adminId ) {
-        return $this->db->table('admin')->select('productCategoryId')->where(['adminId', '=' , $adminId])->row['productCategoryId'];
+    public function getProductByProductCategoryId( $productCategoryId ) {
+        return $this->db->table('productToCategory')->select($this->primaryKey)->where(['productCategoryId', '=' , $productCategoryId]);
     }
+
     //E == 客製化區塊 ========================================//
 }

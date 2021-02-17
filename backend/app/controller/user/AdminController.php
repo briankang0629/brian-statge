@@ -54,7 +54,7 @@ class AdminController extends Controller
 	    }
 
         //取管理者列表
-	    return publicFunction::json([
+        publicFunction::json([
 		    'data' => $data,
 		    'pagination' => $adminModel->getPagination()
 	    ] , 'success');
@@ -86,7 +86,7 @@ class AdminController extends Controller
         }
 
         //取管理者
-        return publicFunction::json([
+        publicFunction::json([
         	'data' => $admin
         ] , 'success');
     }
@@ -235,7 +235,7 @@ class AdminController extends Controller
 	    $this->writeLog(6 , [] , $adminModel->db->getSql());
 
 	    //回傳
-        return publicFunction::json([
+        publicFunction::json([
             'status' => 'success',
             'msg' => language::getFile()['common']['delete']['success'],
         ]);

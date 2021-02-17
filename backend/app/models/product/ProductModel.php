@@ -37,25 +37,17 @@ class ProductModel extends Model {
 
 	/** @var array 預設欄位 */
 	protected $filed = [
-		'productId' , 'productCategoryId' , 'model' , 'costPrice' , 'price' , 'sortOrder' , 'view' , 'status' , 'uploadId' , 'createTime' , 'updateTime'
-	];
-
-	/** @var array 關連欄位 */
-	public $relateWith = [
-		'productDetail' => [
-			'filed' => [
-				'productDetail.name AS name' ,
-				'productDetail.language AS language'
-			] ,
-			'join' => [
-				'table' => 'productDetail' ,
-				'joinKey' => 'productId'
-			] ,
-		] ,
+		'productId' , 'model' , 'costPrice' , 'price' , 'sortOrder' , 'view' , 'status' , 'uploadId' , 'createTime' , 'updateTime'
 	];
 
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'productId';
+
+    /** @var array $cast 主鍵 */
+    protected $casts = [
+        'costPrice' => 'double',
+        'price' => 'double',
+    ];
 
 	/**
 	 * Lists 取商品列表
@@ -90,14 +82,27 @@ class ProductModel extends Model {
 			$where[] = ['status' , '=' , $data['status']];
 		}
 
-		//組關聯要的欄位
-		$this->makeMerge('productDetail');
+		//關聯欄位設定
+		$this->filed = $this->makeMerge([
+			'pd.name' ,
+			'pd.language' ,
+			'p2c.productCategoryId'
+		]);
 
 		//宣告頁碼class
-		$this->makePagination($this->primaryKey , $data , $where , $this->relateWith['productDetail']['join']);
+		$this->makePagination($this->primaryKey , $data , $where , [
+			['table' => 'productDetail', 'joinKey' => 'productId'],
+			['table' => 'productToCategory', 'joinKey' => 'productId']
+		], $this->primaryKey);
 
 		//回傳
-		return $this->db->table($this->table)->select($this->filed)->join('productDetail' , $this->primaryKey)->where($where , true)->orderBy('sortOrder' , 'ASC' , true)->limit($this->pagination->start , $this->pagination->perPage)->rows;
+		return $this->makeCast($this->db->table($this->table)->select($this->filed)
+			->join('productDetail pd', $this->primaryKey)
+			->join('productToCategory p2c', $this->primaryKey)
+			->where($where , true)
+			->groupBy($this->primaryKey , true)
+			->orderBy('sortOrder, productId' , 'ASC' , true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows);
 	}
 
 	/**
@@ -109,8 +114,7 @@ class ProductModel extends Model {
 	 * @return mixed
 	 */
 	public function info( $productId ) {
-		//回傳
-		return $this->db->table($this->table)->select($this->filed)->where(['productId' , '=' , $productId])->row;
+		return $this->makeCast($this->db->table($this->table)->select($this->filed)->where(['productId' , '=' , $productId])->row);
 	}
 
 	/**
@@ -147,7 +151,10 @@ class ProductModel extends Model {
      * @return mixed
      */
     public function delete( $where ) {
-        return $this->db->table($this->table)->delete()->where($where);
+    	return (
+    		$this->db->table($this->table)->delete()->where($where) &&
+		    $this->db->table('productDetail')->delete()->where($where)
+	    );
     }
 
 	//S == 客製化區塊 ========================================//
@@ -161,7 +168,7 @@ class ProductModel extends Model {
 	 * @return mixed
 	 */
 	public function getProductDetail( $productId ) {
-		return $this->db->table('productDetail')->select(['name' , 'language' , 'metaTitle' , 'metaKeyword', 'metaDescription'])->where(['productId' , ' = ' , $productId])->rows;
+		return $this->db->table('productDetail')->select(['name' , 'description' , 'language' , 'metaTitle' , 'metaKeyword', 'metaDescription'])->where(['productId' , ' = ' , $productId])->rows;
     }
 
 	/**
@@ -190,15 +197,58 @@ class ProductModel extends Model {
 	}
 
     /**
-     * getProductByProductCategoryId 依商品分類ID取商品數量
+     * getProductCategoryByProductId 依管理者ID取商品分類ID
      *
      * @since 0.0.1
      * @version 0.0.1
-     * @param int $productCategoryId
+     * @param int $productId
      * @return mixed
      */
-    public function getProductByProductCategoryId( $productCategoryId ) {
-        return $this->db->table($this->table)->select($this->primaryKey)->where(['productCategoryId', '=' , $productCategoryId]);
+    public function getProductCategoryByProductId( $productId ) {
+        return $this->db->table('productToCategory')->select('productCategoryId')->where(['productId', '=' , $productId])->rows;
     }
+
+	/**
+	 * updateProductToCategory 更新商品所屬分類
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param int $id
+	 * @param array $categories
+	 * @return mixed
+	 */
+	public function updateProductToCategory( $id , $categories ) {
+		if(!$this->db->table('productToCategory')->delete()->where([$this->primaryKey, '=' ,$id])) {
+			return false;
+		}
+
+		if(count($categories) < 1) {
+		    return true;
+        }
+
+		foreach($categories as $productCategoryId) {
+			if(!$this->db->table('productToCategory')->insert([
+				$this->primaryKey => $id ,
+				'productCategoryId' => $productCategoryId
+			])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * deleteProductToCategory 刪除商品所屬分類
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param array $where
+	 * @return boolean
+	 */
+	public function deleteProductToCategory($where) {
+		return $this->db->table('productToCategory')->delete()->where($where);
+	}
+
     //E == 客製化區塊 ========================================//
 }

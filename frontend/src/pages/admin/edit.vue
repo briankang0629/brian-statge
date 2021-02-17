@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="admin-edit">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -86,7 +86,7 @@
                                         <router-link :to="{ name: 'adminList'}" class="btn bg-danger mr-3">
                                             <i class="fas fa-reply"></i> {{ $t('common.back') }}
                                         </router-link>
-                                        <b-button type="button" class="btn btn-success" @click="save()">
+                                        <b-button type="button" class="btn btn-success" @click="save()" v-if="controlPermission === 'E'">
                                             <i class="fas fa-pen-nib"></i>  {{ $t('common.' + method) }}
                                         </b-button>
                                     </div>
@@ -180,7 +180,7 @@
                 this.$store.dispatch('authRequest', request).then((response) => {
                     this.permission = response.data;
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -205,7 +205,7 @@
 
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                     this.isLoading = false
                 })
             },
@@ -218,38 +218,17 @@
              */
             save() {
                 const request = {
-                    method: (this.method == 'create') ? 'post' : 'put',
-                    url: '/api/admin/' + (this.method == 'create' ? 'store' : 'update/' + this.$route.params.id),
+                    method: (this.method === 'create') ? 'post' : 'put',
+                    url: '/api/admin/' + (this.method === 'create' ? 'store' : 'update/' + this.$route.params.id),
                     data: this.qs.stringify(this.admin)
                 }
 
                 this.$store.dispatch('authRequest', request).then((response) => {
-                    this.$Swal.fire({
-                        icon: 'success',
-                        title: this.$t('message.success'),
-                        text: response.msg
-                    }).then(() => {
-                        this.$router.push({ name : 'adminList'})
-                    })
-
+	                this.$router.push({ name : 'adminList'}).then(() => { this.$root.notify(response) })
                 }).catch((error) => {
-                    this.$Swal.fire({
-                        icon: 'error',
-                        title: this.$t('message.error'),
-                        text: error.msg
-                    })
+	                this.$root.notify(error)
                 })
             },
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-
-    .admin-image > img {
-        width: 50px;
-        height: 50px;
-    }
-</style>

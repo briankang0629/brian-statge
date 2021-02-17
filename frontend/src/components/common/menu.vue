@@ -34,7 +34,7 @@
                             <a class="nav-link" :class="navLinkBinding(data)" @click="toggleNavigation(data , index)">
                                 <i class="nav-icon fa" :class="data.icon"></i>
                                 <p>
-                                    {{ $t('menu.' + data.name) }}
+                                    {{ $t('menu.' + data.code) }}
                                     <i class="right" :class="{'fas fa-angle-left' : data.children}"></i>
                                 </p>
                             </a>
@@ -43,10 +43,9 @@
                                     <a class="nav-link"
                                        :class="navLinkBinding(subData)"
                                        @click="toggleNavigation(subData)"
-                                       v-show="!subData.hide"
                                     >
                                         <i class="fa fa-caret-right nav-icon"></i>
-                                        <p>{{ $t('menu.' + subData.name) }}</p>
+                                        <p>{{ $t('menu.' + subData.code) }}</p>
                                     </a>
                                 </li>
                             </ul>
@@ -59,10 +58,7 @@
 </template>
 
 <script>
-    import menu from '@/menu'
-
     export default {
-        name: 'menu',
         data() {
             return {
                 menu: [],
@@ -71,7 +67,7 @@
                     {'menu-open': data.toggle === true}
                 ],
                 navLinkBinding: (data) => [
-                    {'active': data.link === this.$route.fullPath}
+                    {'active': data.route === this.$route.fullPath}
                 ],
                 activeMenu: ''
             }
@@ -107,37 +103,7 @@
 
                 this.$store.dispatch('authRequest', request).then((response) => {
                     //資料庫過濾的系統選單
-                    let systemMenu = response.data
-                    let deleteMenu = []
-                    menu.forEach((data, key) => {
-                        //判斷母選單
-                        if (!systemMenu[data.name]) {
-                            //將要刪除的母選單存起來 後面再刪掉 不然會影響下方迴圈
-                            deleteMenu.push(key)
-                        }
-
-                        //判斷子選單
-                        if ((data.children) && (systemMenu[data.name].subMenu)) {
-                            //暫存子選單
-                            let subMenu = systemMenu[data.name].subMenu
-
-                            //判斷網站子選單有無開放
-                            data.children.forEach((value, index) => {
-                                if (!subMenu[value.name]) {
-                                    menu[key].children.splice(index,1)
-                                }
-                            })
-                        }
-                    })
-
-                    //刪除未開放母選單
-                    deleteMenu.forEach((item, key)=> {
-                        menu.splice(key, 1)
-                    })
-
-                    //存系統選單
-                    this.menu = menu
-
+                    this.menu = response.data
                 }).catch((error) => {
                     console.log(error)
                 })
@@ -151,21 +117,21 @@
              */
             toggleNavigation(data, key = 0) {
                 if (data.children) {
-                    if (this.activeMenu === key) {
-                        this.activeMenu = ''
-                    }
-
-                    if ((this.activeMenu)) {
-                        menu[this.activeMenu].toggle = false;
-                    }
+                    // if (this.activeMenu === key) {
+                    //     this.activeMenu = ''
+                    // }
+                    //
+                    // if ((this.activeMenu)) {
+                    //     menu[this.activeMenu].toggle = false;
+                    // }
 
                     if (this.activeMenu !== key) {
                         data.toggle = !data.toggle
                     }
 
-                    this.activeMenu = key;
-                } else if (this.$route.fullPath !== data.link) {
-                    this.$router.push(data.link)
+                    // this.activeMenu = key;
+                } else if (this.$route.fullPath !== data.route) {
+                    this.$router.push(data.route)
                 }
             }
         }
@@ -175,4 +141,12 @@
     .nav.nav-treeview .nav-item {
         /*background: #495053;*/
     }
+
+    /*.nav.nav-treeview .nav-item a.nav-link {*/
+        /*!*padding-left: 40px;*!*/
+    /*}*/
+
+    /*.sidebar-collapse .nav.nav-treeview .nav-item a.nav-link {*/
+        /*padding-left: 16px!important;*/
+    /*}*/
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="media-image">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-12">
@@ -22,7 +22,7 @@
                                 <b-tabs pills card>
                                     <b-tab :title="item.name" class="folder-tab" v-for="(item, key) in imageFolder"
                                            :key="key" @click="folder = item.code">
-                                        <div class="filtr-item col-xs-6 col-sm-6 col-md-2 col-lg-1"
+                                        <div class="filter-item col-xs-6 col-sm-6 col-md-2 col-lg-1"
                                              v-for="(data, index) in imageList[item.code]"
                                              :key="index"
                                         >
@@ -80,8 +80,7 @@
                                 <button class="btn btn-primary ml-2"
                                         :disabled="(!imageRecordsForUpload.length) || (disabled)"
                                         @click="uploadImage()">
-                                    {{ $t('common.upload') }} {{ imageRecordsForUpload.length }} {{
-                                    $t('common.countImages') }}
+                                    {{ $t('common.upload') }} {{ imageRecordsForUpload.length }} {{ $t('common.countImages') }}
                                 </button>
                             </div>
                         </div>
@@ -265,7 +264,7 @@
                     this.imageList = response.data
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -289,7 +288,7 @@
                     this.folder = response.data[0].code
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -309,11 +308,7 @@
 
                 //開始上傳
                 this.$refs.uploadImage.upload(this.uploadUrl, this.uploadHeaders, this.imageRecordsForUpload).then((response) => {
-                    this.$Swal.fire({
-                        icon: 'success',
-                        title: this.$t('message.success'),
-                        text: this.$t('message.uploadSuccess'),
-                    })
+	                this.$root.notify(response)
 
                     //清除圖片
                     this.imageRecords = []
@@ -325,12 +320,7 @@
 
                     this.getImage()
                 }).catch((error) => {
-                    console.log(error[0].message)
-                    this.$Swal.fire({
-                        icon: 'error',
-                        title: this.$t('message.error'),
-                        text: this.$t('message.uploadFail'),
-                    })
+	                this.$root.notify(error)
 
                     //清除圖片
                     this.imageRecords = []
@@ -378,21 +368,12 @@
                 }
 
                 this.$store.dispatch('authRequest', request).then((response) => {
-                    this.$Swal.fire({
-                        icon: 'success',
-                        title: this.$t('message.success'),
-                        text:  response.msg,
-                    })
-
+	                this.$root.notify(response)
                     this.$refs['createFolder'].hide()
                     this.getImage()
                 }).catch((error) => {
-                    console.log(error)
-                    this.$Swal.fire({
-                        icon: 'error',
-                        title: error.errorCode,
-                        text: error.msg,
-                    })
+	                this.$root.notify(error)
+
                     this.isLoading = false
                 })
             },
@@ -424,18 +405,15 @@
              * @version 0.0.1
              */
             remove: function () {
-                //詢問刪除
-                this.$Swal.fire({
-                    title: this.$t('message.askDelete'),
-                    text: this.$t('message.askDeleteMessage'),
-                    icon: 'warning',
-                    confirmButtonText: this.$t('common.confirm'),
-                    cancelButtonText: this.$t('common.cancel'),
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    showCancelButton: true,
-                    reverseButtons: true
-                }).then((result) => {
+	            let askSetting = {
+		            title: this.$t('message.askDelete'),
+		            text: this.$t('message.askDeleteMessage'),
+		            confirmText: this.$t('common.confirm'),
+		            cancelText: this.$t('common.cancel'),
+	            }
+
+	            //詢問刪除
+	            this.$Swal.ask(askSetting).then((result) => {
                     if (result.isConfirmed) {
                         this.isLoading = true
                         let imageId = this.selected.join(',')
@@ -447,8 +425,8 @@
                         }
 
                         this.$store.dispatch('authRequest', request).then((response) => {
-                            this.$Swal.fire({
-                                icon: 'success',
+                            this.$notify({
+                                type:'success',
                                 title: this.$t('message.success'),
                                 text: response.msg,
                             })
@@ -457,12 +435,12 @@
                             this.selected = []
                             this.getImage()
                         }).catch((error) => {
-                            console.log(error)
-                            this.$Swal.fire({
-                                icon: 'error',
+                            this.$notify({
+                                type:'error',
                                 title: this.$t('message.error'),
                                 text: error.msg,
                             })
+
                             this.isLoading = false
                         })
                     }
@@ -471,59 +449,3 @@
         },
     }
 </script>
-
-<style>
-    .card-title {
-        font-size: 14px;
-    }
-
-    /** 圖庫區 */
-    .folder-tab {
-        max-height: 500px;
-        overflow-y: scroll;
-        box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    /** 上傳按鈕群組 */
-    .upload-button-group {
-        display: inline-block;
-    }
-
-    .upload-button-group > button {
-        font-size: 14px;
-    }
-
-    /** 圖片縮圖 */
-    .img-thumbnail {
-        padding: .25rem;
-        background-color: #ebedef;
-        border: 1px solid #c4c9d0;
-        border-radius: .25rem;
-        height: 100px;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
-
-    /** 圖片排列方式 */
-    .filtr-item {
-        display: inline-block;
-        max-width: 125px;
-    }
-
-    /** 選擇圖片按鈕 */
-    .select-img {
-        position: absolute;
-        top: 0;
-        left: 5px;
-    }
-
-    .select-img input[type=checkbox] {
-        height: 20px;
-        width: 20px;
-    }
-
-    /** 上傳前預覽圖 */
-    .file-preview.image-preview {
-        z-index: 10!important;
-    }
-</style>

@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="user-list">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -268,19 +268,17 @@
              * @version 0.0.1
              */
             remove() {
-                //詢問刪除
-                this.$Swal.fire({
-                    title: this.$t('message.askDelete'),
-                    text: this.$t('message.askDeleteMessage'),
-                    icon: 'warning',
-                    confirmButtonText: this.$t('common.confirm'),
-                    cancelButtonText: this.$t('common.cancel'),
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    showCancelButton: true,
-                    reverseButtons: true
-                }).then((result) => {
+	            let askSetting = {
+		            title: this.$t('message.askDelete'),
+		            text: this.$t('message.askDeleteMessage'),
+		            confirmText: this.$t('common.confirm'),
+		            cancelText: this.$t('common.cancel'),
+	            }
+
+	            //詢問刪除
+	            this.$Swal.ask(askSetting).then((result) => {
                     if (result.isConfirmed) {
+                        this.isLoading = true
                         let userId = this.selected.join(',')
                         //請求刪除
                         const request = {
@@ -290,19 +288,11 @@
 
                         //請求刪除前驗證
                         this.$store.dispatch('authRequest', request).then((response) => {
-                            this.$Swal.fire({
-                                icon: 'success',
-                                title: this.$t('message.success'),
-                                text: response.msg
-                            })
-
+	                        this.$root.notify(response)
                             this.getUser()
                         }).catch((error) => {
-                            this.$Swal.fire({
-                                icon: 'error',
-                                title: this.$t('message.error'),
-                                text: error.msg
-                            })
+	                        this.$root.notify(error)
+                            this.isLoading = false
                         })
                     }
                     //請空選擇
@@ -313,8 +303,3 @@
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-</style>

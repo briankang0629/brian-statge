@@ -13,12 +13,25 @@ namespace Libraries;
 * Request class
 */
 class Request {
+	/** @var array $get */
 	public static $get = array();
+
+	/** @var array $post */
 	public static $post = array();
+
+	/** @var array $put */
 	public static $put = array();
+
+	/** @var array $cookie */
 	public static $cookie = array();
+
+	/** @var array $files */
 	public static $files = array();
+
+	/** @var array $server */
 	public static $server = array();
+
+	/** @var array $delete */
 	public static $delete = array();
 
 	/**

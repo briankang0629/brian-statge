@@ -1,5 +1,5 @@
 <template>
-	<div class="content-header">
+	<div class="content-header" id="breadcrumb">
 		<div class="container-fluid">
 			<div class="row mb-4">
 				<div class="col-sm-6">
@@ -18,11 +18,9 @@
 </template>
 
 <script>
-	import menu from '@/menu'
 	export default {
 		data() {
 			return {
-				menu: menu,
 				page: '',
 				subPage: '',
 			}
@@ -50,13 +48,3 @@
 		}
 	}
 </script>
-
-<style>
-	ol li {
-		font-size: 14px;
-	}
-
-	.content-header {
-		/*background: white*/
-	}
-</style>

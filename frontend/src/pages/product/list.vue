@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="product-list">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -89,47 +89,53 @@
                         <table class="table table-hover table-striped text-nowrap">
                             <thead>
                                 <tr>
-                                <th v-if="controlPermission === 'E'" >{{ $t('common.select') }}</th>
-                                <th>{{ $t('common.image') }}</th>
-                                <th>{{ $t('product.productId') }}</th>
-                                <th>{{ $t('product.model') }}</th>
-                                <th>{{ $t('product.name') }}</th>
-                                <th>{{ $t('product.costPrice') }}</th>
-                                <th>{{ $t('product.price') }}</th>
-                                <th>{{ $t('product.productCategory') }}</th>
-                                <th>{{ $t('product.createTime') }}</th>
-                                <th>{{ $t('product.status') }}</th>
-                                <th>{{ $t('product.operate') }}</th>
-                            </tr>
+                                    <th v-if="controlPermission === 'E'" >{{ $t('common.select') }}</th>
+                                    <th>{{ $t('common.image') }}</th>
+                                    <th>{{ $t('product.productId') }}</th>
+                                    <th>{{ $t('product.model') }}</th>
+                                    <th>{{ $t('product.name') }}</th>
+                                    <th>{{ $t('product.costPrice') }}</th>
+                                    <th>{{ $t('product.price') }}</th>
+                                    <th>{{ $t('product.productCategory') }}</th>
+                                    <th>{{ $t('product.sortOrder') }}</th>
+                                    <th>{{ $t('product.createTime') }}</th>
+                                    <th>{{ $t('product.status') }}</th>
+                                    <th>{{ $t('product.operate') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(data, index) in productList" :key="index">
-                                <td v-if="controlPermission === 'E'"><input type="checkbox" :value="data.productId" v-model="selected"/></td>
-                                <td class="product-image">
-                                    <b-img :src="data.picture" alt="product-image" v-if="data.picture"></b-img>
-                                    <b-img :src="notFound" alt="notFound-image" v-else></b-img>
-                                </td>
-                                <td>{{data.productId}}</td>
-                                <td>{{data.model}}</td>
-                                <td>{{data.name}}</td>
-                                <td>{{data.costPrice}}</td>
-                                <td>{{data.price}}</td>
-                                <td>{{data.productCategory}}</td>
-                                <td>{{data.createTime}}</td>
-                                <td><span class="badge"
-                                          :class="classStatus(data.status)">{{$t('status.' + data.status)}}</span>
-                                </td>
-                                <td>
-                                    <router-link :to="{ name: 'productEdit', params: { id: data.productId }}" class="btn btn-primary">
-                                        <span v-if="controlPermission === 'E'">
-                                            <i class="fas fa-pencil-alt"></i> {{ $t('common.edit') }}
+                                    <td v-if="controlPermission === 'E'"><input type="checkbox" :value="data.productId" v-model="selected"/></td>
+                                    <td class="product-image">
+                                        <b-img :src="data.picture" alt="product-image" v-if="data.picture"></b-img>
+                                        <b-img :src="notFound" alt="notFound-image" v-else></b-img>
+                                    </td>
+                                    <td>{{data.productId}}</td>
+                                    <td>{{data.model}}</td>
+                                    <td>{{data.name}}</td>
+                                    <td>{{data.costPrice}}</td>
+                                    <td>{{data.price}}</td>
+                                    <td style="white-space: normal;">
+                                        <span v-for="(sort, key) in data.category" class="badge bg-success mr-2" :key="key">
+                                            {{ categories[sort] }}
                                         </span>
-                                        <span v-if="controlPermission === 'V'">
-                                            <i class="fas fa-eye"></i> {{ $t('common.view') }}
-                                        </span>
-                                    </router-link>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td>{{data.sortOrder}}</td>
+                                    <td>{{data.createTime}}</td>
+                                    <td><span class="badge"
+                                              :class="classStatus(data.status)">{{$t('status.' + data.status)}}</span>
+                                    </td>
+                                    <td>
+                                        <router-link :to="{ name: 'productEdit', params: { id: data.productId }}" class="btn btn-primary">
+                                            <span v-if="controlPermission === 'E'">
+                                                <i class="fas fa-pencil-alt"></i> {{ $t('common.edit') }}
+                                            </span>
+                                            <span v-if="controlPermission === 'V'">
+                                                <i class="fas fa-eye"></i> {{ $t('common.view') }}
+                                            </span>
+                                        </router-link>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <div v-if="!isLoading && !productList.length" class="text-notfound text-center">
@@ -179,6 +185,8 @@
                     {'bg-success': status === 'Y'},
                     {'bg-danger': status === 'N'},
                 ],
+                //商品分類依k&v格式組合成的陣列
+                categories:{},
                 //選擇
                 selected: [],
                 //notfound-image
@@ -194,7 +202,7 @@
                 //loading
                 isLoading: false,
                 //操作的權限
-                controlPermission: ''
+                controlPermission: '',
             }
         },
         computed: {},
@@ -252,7 +260,7 @@
                     this.pagination.totalPage = response.pagination.totalPage
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -270,8 +278,12 @@
 
                 this.$store.dispatch('authRequest', request).then((response) => {
                     this.productCategory = response.data;
+
+                    response.data.forEach((data) => {
+                        this.categories[data.productCategoryId] =  data.name
+                    })
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error);
                 })
             },
 
@@ -282,19 +294,17 @@
              * @version 0.0.1
              */
             remove() {
+                let askSetting = {
+		            title: this.$t('message.askDelete'),
+		            text: this.$t('message.askDeleteMessage'),
+                    confirmText: this.$t('common.confirm'),
+		            cancelText: this.$t('common.cancel'),
+                }
+
                 //詢問刪除
-                this.$Swal.fire({
-                    title: this.$t('message.askDelete'),
-                    text: this.$t('message.askDeleteMessage'),
-                    icon: 'warning',
-                    confirmButtonText: this.$t('common.confirm'),
-                    cancelButtonText: this.$t('common.cancel'),
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    showCancelButton: true,
-                    reverseButtons: true
-                }).then((result) => {
+                this.$Swal.ask(askSetting).then((result) => {
                     if (result.isConfirmed) {
+                        this.isLoading = true
                         let productId = this.selected.join(',')
                         //請求刪除
                         const request = {
@@ -304,36 +314,19 @@
 
                         //請求刪除前驗證
                         this.$store.dispatch('authRequest', request).then((response) => {
-                            this.$Swal.fire({
-                                icon: 'success',
-                                title: this.$t('message.success'),
-                                text: response.msg
-                            })
+	                        this.$root.notify(response);
 
                             this.getProduct()
                         }).catch((error) => {
-                            this.$Swal.fire({
-                                icon: 'error',
-                                title: this.$t('message.error'),
-                                text: error.msg
-                            })
+	                        this.$root.notify(error);
+
+                            this.isLoading = false
                         })
                     }
                     //請空選擇
                     this.selected = []
                 })
-
             }
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-
-    .product-image > img {
-        width: 50px;
-        height: 50px;
-    }
-</style>

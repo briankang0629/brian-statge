@@ -38,14 +38,6 @@ class AdminModel extends Model {
 		'adminId' , 'permissionId' , 'name' , 'account' , 'password' , 'email' , 'createTime' , 'updateTime' , 'status', 'sub', 'uploadId', 'picture'
 	];
 
-	/** @var array 關連欄位 */
-	public $relateWith = [
-		'permission' => [
-			'filed' => ['permission.name AS permission' , 'permission.name as permission'] ,
-			'join' => ['table' => 'permission' , 'joinKey' => 'permissionId'] ,
-		] ,
-	];
-
 	/** @var string primary 主鍵 */
 	private $primaryKey = 'adminId';
 
@@ -88,12 +80,18 @@ class AdminModel extends Model {
         $where[] = ['adminId', '!=' , AdminID];
 
 		//組關聯要的欄位
-		$this->makeMerge('permission');
+		$this->filed = $this->makeMerge([
+			'p.name AS permission'
+		]);
 
 		//宣告頁碼class
 		$this->makePagination($this->primaryKey , $data , $where);
 
-		return $this->db->table($this->table)->select($this->filed)->join('permission' , 'permissionId')->where($where , true)->orderBy('adminId' , 'ASC' , true)->limit($this->pagination->start , $this->pagination->perPage)->rows;
+		return $this->db->table($this->table)->select($this->filed)
+			->join('permission p' , 'permissionId')
+			->where($where , true)
+			->orderBy('adminId' , 'ASC' , true)
+			->limit($this->pagination->start , $this->pagination->perPage)->rows;
 	}
 
 	/**

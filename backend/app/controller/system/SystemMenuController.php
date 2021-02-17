@@ -77,7 +77,7 @@ class SystemMenuController extends Controller
 	public function config() {
 		//宣告
 		$menu = [];
-		$subMenu = [];
+		$children = [];
 		$permission = Permission;
 		$systemMenuModel = new SystemMenuModel();
 
@@ -87,28 +87,41 @@ class SystemMenuController extends Controller
 		//取母選單
 		foreach($lists as $key => $list) {
 			if($list['parentId'] == 0) {
-				$menu[$list['code']] = $list;
+                $list['toggle'] = false;
+                $menu[] = $list;
 			} else {
-				$subMenu[] = $list;
+				$children[] = $list;
 			}
 		}
 
 		//取子選單
 		foreach($menu as $key => $value) {
-			foreach($subMenu as $sub) {
+            //預設無任何子選單
+            $noChildrenList = true;
+
+			foreach($children as $sub) {
 				if($value['systemMenuId'] == $sub['parentId']) {
+                    $noChildrenList = false;
                     //判斷權限 若無開放則移除
 				    if(!isset($permission[$value['code']][$sub['code']]) || ($permission[$value['code']][$sub['code']] == 'N')) {
 				        continue;
                     }
 				    //存到子選單
-					$menu[$key]['subMenu'][$sub['code']] = $sub;
+					$menu[$key]['children'][] = $sub;
 				}
 			}
+
+            //檢視母選單下的子選單有無任一開放 若子選單都未開放 母選單則移除 ＠todo寫法需優化
+			if((!$noChildrenList) && (!isset($menu[$key]['children']))) {
+			    unset($menu[$key]);
+            }
 		}
 
+		//重新排序
+		sort($menu);
+
 		//回傳
-		return publicFunction::json([
+		publicFunction::json([
 			'data' => $menu
 		], 'success');
 	}

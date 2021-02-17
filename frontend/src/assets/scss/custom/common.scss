@@ -1,0 +1,77 @@
+/**
+ * Common 通用 CSS
+ *
+ * @since 0.0.1
+ * @version 0.0.1
+ * @author Brian
+ * @date 2021/01/07
+ */
+
+/**
+ * Common 通用設定
+ */
+.tabs {
+	.card-header {
+		background-color: white;
+	}
+}
+
+.card-header {
+	padding: 15px 20px!important;
+	.card-title {
+		margin-bottom: 0;
+	}
+}
+
+th, td {
+	text-align: center;
+}
+
+.modal-backdrop {
+	opacity: 0.5 !important;
+}
+
+/**
+ * 網頁版彈窗
+ */
+@media (min-width: 768px) {
+	.modal-content {
+		min-width: 600px !important;
+		margin-left: -50px !important;
+	}
+}
+
+
+/**
+ * 搜尋無資料字樣
+ */
+.text-notfound {
+	width: 100%;
+	margin: 10% 0 ;
+}
+
+/**
+ * 側邊選單字體大小
+ */
+.sidebar ul li.nav-item p {
+	font-size: 14px;
+}
+
+.sidebar {
+
+	.nav-item {
+
+		.nav-link {
+			height: 50px;
+			padding-top: 12px;
+
+			p {
+				margin-left: 5px;
+			}
+
+			.right {
+				margin-top: 7px;
+			}
+		}
+	}
+}

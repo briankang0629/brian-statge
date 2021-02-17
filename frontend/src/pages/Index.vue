@@ -80,7 +80,7 @@
 							</div>
 						</div>
 						<div class="card-body">
-							<canvas id="myChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+							<canvas id="myChart" style="min-height: 250px; height: 400px; max-height: 400px; max-width: 100%;"></canvas>
 						</div>
 					</div>
 				</div>
@@ -99,7 +99,7 @@
 							</div>
 						</div>
 						<div class="card-body">
-							<canvas id="DonutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+							<canvas id="DonutChart" style="min-height: 250px; height: 400px; max-height: 400px; max-width: 100%;"></canvas>
 						</div>
 					</div>
 				</div>

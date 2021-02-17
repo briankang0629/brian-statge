@@ -1,5 +1,5 @@
 <template>
-    <section class="content">
+    <section class="content" id="user-edit">
         <div class="container-fluid">
             <!-- Tool Bar-->
             <div class="row">
@@ -94,7 +94,7 @@
                                         <router-link :to="{ name: 'userList'}" class="btn bg-danger mr-3">
                                             <i class="fas fa-reply"></i> {{ $t('common.back') }}
                                         </router-link>
-                                        <b-button type="button" class="btn btn-success" @click="save()">
+                                        <b-button type="button" class="btn btn-success" @click="save()" v-if="controlPermission === 'E'">
                                             <i class="fas fa-pen-nib"></i>  {{ $t('common.' + method) }}
                                         </b-button>
                                     </div>
@@ -198,7 +198,7 @@
                     this.pagination.totalPage = response.pagination.totalPage
                     this.isLoading = false;
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -217,7 +217,7 @@
                 this.$store.dispatch('authRequest', request).then((response) => {
                     this.userGroup = response.data;
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                 })
             },
 
@@ -242,7 +242,7 @@
 
                     this.isLoading = false
                 }).catch((error) => {
-                    console.log(error)
+	                this.$root.notify(error)
                     this.isLoading = false
                 })
             },
@@ -261,77 +261,11 @@
                 }
 
                 this.$store.dispatch('authRequest', request).then((response) => {
-                    this.$Swal.fire({
-                        icon: 'success',
-                        title: this.$t('message.success'),
-                        text: response.msg
-                    }).then(() => {
-                        this.$router.push({ name : 'userList'})
-                    })
-
+                    this.$router.push({ name : 'userList'}).then(() => { this.$root.notify(response) })
                 }).catch((error) => {
-                    this.$Swal.fire({
-                        icon: 'error',
-                        title: this.$t('message.error'),
-                        text: error.msg
-                    })
+                    this.$root.notify(error)
                 })
             },
-
-            /**
-             * remove 刪除
-             *
-             * @since 0.0.1
-             * @version 0.0.1
-             */
-            remove() {
-                //詢問刪除
-                this.$Swal.fire({
-                    title: this.$t('message.askDelete'),
-                    text: this.$t('message.askDeleteMessage'),
-                    icon: 'warning',
-                    confirmButtonText: this.$t('common.confirm'),
-                    cancelButtonText: this.$t('common.cancel'),
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    showCancelButton: true,
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let userId = this.selected.join(',')
-                        //請求刪除
-                        const request = {
-                            method: 'delete',
-                            url: '/api/user/' + userId,
-                        }
-
-                        //請求刪除前驗證
-                        this.$store.dispatch('authRequest', request).then((response) => {
-                            this.$Swal.fire({
-                                icon: 'success',
-                                title: this.$t('message.success'),
-                                text: response.msg
-                            })
-
-                            this.getUser()
-                        }).catch((error) => {
-                            this.$Swal.fire({
-                                icon: 'error',
-                                title: this.$t('message.error'),
-                                text: error.msg
-                            })
-                        })
-                    }
-                    //請空選擇
-                    this.selected = []
-                })
-
-            }
         }
     }
 </script>
-<style>
-    th, td {
-        text-align: center;
-    }
-</style>

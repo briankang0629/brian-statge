@@ -151,7 +151,8 @@ final class PDO {
 			throw new \Exception('Error: ' . $e->getMessage() . ' Error Code : ' . $e->getCode() . ' <br />' . $sql);
 		}
 
-        $this->params = []; //每次執行完要將參數清空 不然會影響到下次寫入語法 EX:INSERT
+		//還原預設
+		$this->clear();
 
 		if($result) {
 			return $result;
@@ -273,7 +274,7 @@ final class PDO {
 	 *
 	 * @since 0.0.1
 	 * @version 0.0.1
-	 * @return $this
+	 * @return boolean
 	 */
 	public function insert( $data ) {
 		$this->type = 'insert';
@@ -316,6 +317,41 @@ final class PDO {
 
 		$this->sql = sprintf($sql , join(', ' , $temp));
 		return $this;
+	}
+
+	/**
+	 * upsert 組成 INSERT UPDATE 得寫法 資料存在就更新，反之新增一筆
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param array $data 要新增的資料
+	 * @param array $update 要更新的資料
+	 * @return $this
+	 */
+	public function upsert( $data , $update ) {
+		$this->type = 'insert';
+		$sql = "INSERT INTO $this->table (%s) VALUES (%s) ON DUPLICATE KEY UPDATE %s";
+		$temp = [];
+		$updateTemp = [];
+		$sentData = [];
+
+		if(count($data) == 0 || !is_array($data)) {
+			return false;
+		}
+
+		//insert
+		foreach($data as $key => $value) {
+			$temp[] = $key;
+			$sentData[$key] = $value;
+		}
+
+		//update
+		foreach($update as $key => $value) {
+			$updateTemp[] = $key . " = '" . $value . "'";
+		}
+
+		$this->sql = sprintf($sql , join(',' , $temp) , '"' . join('","' , $sentData) . '"' , join(',' , $updateTemp));
+		return $this->query($this->sql);
 	}
 
 	/**
@@ -416,6 +452,25 @@ final class PDO {
 		}
 	}
 
+    /**
+     * groupBy 組成 GROUP BY 得寫法
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param string|array $field
+     * @return $this
+     */
+    public function groupBy( $field = '' , $next = false ) {
+        $this->sql .= " GROUP BY " . $this->escape($field);
+
+        if($next) {
+            return $this;
+        } else {
+            //回傳結果
+            return $this->query($this->sql);
+        }
+    }
+
 	/**
 	 * limit 組成 LIMIT 得寫法
 	 *
@@ -454,6 +509,32 @@ final class PDO {
 		foreach($joins as $key => $join) {
 			$this->sql .= " JOIN " . $join['table'] . " USING (" . $join['joinKey'] . ")";
 		}
+		return $this;
+	}
+
+    /**
+     * left join 組成LEFT JOIN得寫法
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @return $this
+     */
+    public function leftJoin( $table , $joinKey , $relateData ) {
+        $this->sql .= " LEFT JOIN " . $relateData['table'] . " ON ($table.$joinKey = " . $relateData['table'] . "." . $relateData['joinKey'] . ")";
+
+        return $this;
+    }
+
+	/**
+	 * right join 組成RIGHT JOIN得寫法
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @return $this
+	 */
+	public function rightJoin( $table , $joinKey , $relateData ) {
+		$this->sql .= " RIGHT JOIN " . $relateData['table'] . " ON ($table.$joinKey = " . $relateData['table'] . "." . $relateData['joinKey'] . ")";
+
 		return $this;
 	}
 
@@ -539,5 +620,14 @@ final class PDO {
 	 */
 	public function __destruct() {
 		$this->connection = null;
+	}
+
+	/**
+	 * clear 清除資料還原預設
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 */
+	private function clear() {
+		$this->params = [];
 	}
 }

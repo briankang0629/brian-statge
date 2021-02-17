@@ -38,9 +38,13 @@ abstract class Middleware {
      */
     public function __construct() {}
 
-    public function handle($router) {}
-
-    public function match() {
-
-    }
+    /**
+     * handle 處理中介層的請求
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param $router
+     * @return mixed
+     */
+    abstract protected function handle($router);
 }

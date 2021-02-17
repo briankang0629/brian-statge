@@ -19,50 +19,60 @@ use Libraries\Request as request;
 class ProductCategoryController extends Controller
 {
 
-	//----------------------------------------------------------------
-	//Region API
-	//----------------------------------------------------------------
+    //----------------------------------------------------------------
+    //Region API
+    //----------------------------------------------------------------
+
+    /** @var string $tempName 暫存名稱 */
+    private $tempName = '';
 
     /**
      * lists 權限清單
      *
-	 * @since 0.0.1
-	 * @version 0.0.1
+     * @since 0.0.1
+     * @version 0.0.1
      */
-    public function lists() {
+    public function lists () {
         //驗證權限
-        $this->permission('product/productCategory','V','A');
+        $this->permission('product/productCategory', 'V', 'A');
 
         //宣告
         $data = [];
         $productCategoryModel = new ProductCategoryModel();
-        $productModel = new ProductModel();
 
         //取權限列表
         $productCategories = $productCategoryModel->lists(request::$get);
 
         //計算該權限下有多少管理者
         foreach ($productCategories as $key => $productCategory) {
-            $productCategory['productCount'] = $productModel->getProductByProductCategoryId($productCategory['productCategoryId'])->count;
+            //計算商品歸類數
+            $productCategory['productCount'] = $productCategoryModel->getProductByProductCategoryId($productCategory['productCategoryId'])->count;
+
+            //製作分類名稱
+            if ($productCategory['parentId']) {
+                $productCategory['name'] = $this->makeProductCategoryName($productCategory, $productCategories);
+                $productCategories[$key] = $productCategory;
+            }
+
             $data[] = $productCategory;
         }
 
         //回傳
         return publicFunction::json([
-        	'data' => $data,
-	        'pagination' => $productCategoryModel->getPagination()
-        ] , 'success');
+            'data'       => $data,
+            'pagination' => $productCategoryModel->getPagination()
+        ], 'success');
     }
 
     /**
      * info 權限資訊
      *
-	 * @since 0.0.1
-	 * @version 0.0.1
+     * @since 0.0.1
+     * @version 0.0.1
      */
-    public function info($id) {
+    public function info ($id) {
         //驗證權限
-        $this->permission('product/productCategory','V','A');
+        $this->permission('product/productCategory', 'V', 'A');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
@@ -76,101 +86,101 @@ class ProductCategoryController extends Controller
         //取權限資訊
         return publicFunction::json([
             'data' => $productCategory
-        ] , 'success');
+        ], 'success');
     }
 
-	/**
-	 * store 新增權限
-	 *
-	 * @since 0.1.0
-	 * @return boolean
-	 */
-	public function store() {
-        //驗證權限
-        $this->permission('product/productCategory','E','A');
-
-        //宣告
-        $productCategoryModel = new ProductCategoryModel();
-
-        //規則
-		$require = [
-			'name' => 'required|string',
-			'productCategory' => 'required|string',
-			'status' => 'required|in:Y&N',
-		];
-
-		//驗證
-        validator::make(request::$post , $require);
-
-		//檢查名稱有無重覆
-		if(!$productCategoryModel->checkExist('name', request::$post['name'])) {
-			publicFunction::error('0104');
-		}
-
-		//傳送參數
-        $sentData = [
-            'name' => request::$post['name'],
-            'productCategory' => json_encode(request::$post['productCategory']),
-            'status' => request::$post['status'],
-            'createTime' => date('Y-m-d H:i:s'),
-        ];
-
-		//執行更新
-        $productCategoryModel->store($sentData);
-
-		//操作記錄
-		$this->writeLog(7 , $sentData , $productCategoryModel->db->getSql());
-
-		//回傳
-        publicFunction::json([
-            'status' => 'success',
-            'msg' => language::getFile()['common']['create']['success'],
-        ]);
-
-	}
-
     /**
-     * update 修改權限
+     * store 新增權限
      *
-	 * @since 0.0.1
-	 * @version 0.0.1
-     * @param int $productCategoryID 權限id
-     * @return string|array
+     * @since 0.1.0
+     * @return boolean
      */
-    public function update($id) {
+    public function store () {
         //驗證權限
-        $this->permission('product/productCategory','E','A');
+        $this->permission('product/productCategory', 'E', 'A');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
 
         //規則
         $require = [
-            'name' => 'required|string',
+            'name'            => 'required|string',
             'productCategory' => 'required|string',
-            'status' => 'required|in:Y&N',
+            'status'          => 'required|in:Y&N',
         ];
 
         //驗證
-        validator::make(request::$put , $require);
+        validator::make(request::$post, $require);
+
+        //檢查名稱有無重覆
+        if ( !$productCategoryModel->checkExist('name', request::$post['name'])) {
+            publicFunction::error('0104');
+        }
+
+        //傳送參數
+        $sentData = [
+            'name'            => request::$post['name'],
+            'productCategory' => json_encode(request::$post['productCategory']),
+            'status'          => request::$post['status'],
+            'createTime'      => date('Y-m-d H:i:s'),
+        ];
+
+        //執行更新
+        $productCategoryModel->store($sentData);
+
+        //操作記錄
+        $this->writeLog(7, $sentData, $productCategoryModel->db->getSql());
+
+        //回傳
+        publicFunction::json([
+            'status' => 'success',
+            'msg'    => language::getFile()['common']['create']['success'],
+        ]);
+
+    }
+
+    /**
+     * update 修改權限
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param int $productCategoryID 權限id
+     * @return string|array
+     */
+    public function update ($id) {
+        //驗證權限
+        $this->permission('product/productCategory', 'E', 'A');
+
+        //宣告
+        $productCategoryModel = new ProductCategoryModel();
+
+        //規則
+        $require = [
+            'name'            => 'required|string',
+            'productCategory' => 'required|string',
+            'status'          => 'required|in:Y&N',
+        ];
+
+        //驗證
+        validator::make(request::$put, $require);
 
         //傳送參數
         $sentData = [
             'productCategory' => json_encode(request::$put['productCategory']),
-            'name' => request::$put['name'],
-            'status' => request::$put['status'],
+            'name'            => request::$put['name'],
+            'status'          => request::$put['status'],
         ];
 
         //執行更新
         $productCategoryModel->update($id, $sentData);
 
-	    //操作記錄
-	    $this->writeLog(8 , $sentData , $productCategoryModel->db->getSql());
+        //操作記錄
+        $this->writeLog(8, $sentData, $productCategoryModel->db->getSql());
 
-	    //回傳
+        //回傳
         publicFunction::json([
             'status' => 'success',
-            'msg' => language::getFile()['common']['update']['success'],
+            'msg'    => language::getFile()['common']['update']['success'],
         ]);
     }
 
@@ -184,21 +194,25 @@ class ProductCategoryController extends Controller
      */
     public function delete ($id) {
         //驗證權限
-        $this->permission('product/productCategory','E','A');
+        $this->permission('product/productCategory', 'E', 'A');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
 
         //單筆或多筆刪除
-        $productCategoryModel->delete(['productCategoryId', 'IN', '( ' . $id . ' )']);
+        $productCategoryModel->delete([
+            'productCategoryId',
+            'IN',
+            '( ' . $id . ' )'
+        ]);
 
-	    //操作記錄
-	    $this->writeLog(9 , [] , $productCategoryModel->db->getSql());
+        //操作記錄
+        $this->writeLog(9, [], $productCategoryModel->db->getSql());
 
-	    //回傳
+        //回傳
         return publicFunction::json([
             'status' => 'success',
-            'msg' => language::getFile()['common']['delete']['success'],
+            'msg'    => language::getFile()['common']['delete']['success'],
         ]);
     }
 
@@ -209,14 +223,46 @@ class ProductCategoryController extends Controller
      * @version 0.0.1
      * @return mixed
      */
-    public function getProductCategoryConfig() {
+    public function getProductCategoryConfig () {
         return publicFunction::json([
             'status' => 'success',
-            'data' => publicFunction::getSystemCode()['productCategory'],
+            'data'   => publicFunction::getSystemCode()['productCategory'],
         ]);
     }
 
     //----------------------------------------------------------------
     //EndRegion API
+    //----------------------------------------------------------------
+
+    //----------------------------------------------------------------
+    //Start 附屬函示
+    //----------------------------------------------------------------
+
+    /**
+     * makeProductCategoryName 依據商品分類製作層級的名稱
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param array $category
+     * @param array $categories
+     * @return mixed
+     */
+    private function makeProductCategoryName ($category , $categories ) {
+        $this->tempName = $category['name'];
+
+        foreach ($categories as $key => $item) {
+            if($category['parentId'] === $item['productCategoryId']) {
+                $category['name'] = $item['name']  . ' > ' . $this->tempName;
+            } else {
+                unset($categories[$key]);
+                continue;
+            }
+        }
+
+        return $category['name'];
+    }
+
+    //----------------------------------------------------------------
+    //End 附屬函示
     //----------------------------------------------------------------
 }

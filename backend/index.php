@@ -27,12 +27,12 @@ require_once 'config.php';
 Libraries\Request::init();
 
 //language @todo
-//if (isset($register['request']->cookie['localize'])) {
-//	Libraries\Language::init($register['request']->cookie['localize']);//Language
-//} else {
+if (isset(Libraries\Request::$cookie['localize'])) {
+	Libraries\Language::init(Libraries\Request::$cookie['localize']);
+} else {
 //    setcookie('localize', 'zh-tw');
-Libraries\Language::init('zh-tw');//Language
-//}
+	Libraries\Language::init('zh-tw');//Language
+}
 
 //PublicFunction
 Libraries\PublicFunction::init();

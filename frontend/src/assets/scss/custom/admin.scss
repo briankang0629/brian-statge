@@ -1,0 +1,32 @@
+/**
+ * 管理端 客制化 CSS
+ *
+ * @since 0.0.1
+ * @version 0.0.1
+ * @author Brian
+ * @date 2021/01/07
+ */
+
+//管理者清單
+#admin-list {
+	.admin-image {
+		> img {
+			width: 50px;
+			height: 50px;
+		}
+	}
+
+	.container-fluid .card-table {
+		min-height: 500px;
+	}
+}
+
+//編輯管理者
+#admin-edit {
+ 	//checkbox 套件狀態按鈕
+	.vue-switcher {
+		position: absolute;
+		top: 14px;
+	}
+}
+

@@ -5,11 +5,10 @@
  * @since 0.0.1
  * @version 0.0.1
  * @author Brian
- * @date: 2019-05-11
- * @since 0.1.0
+ * @date 2019-05-11
  */
 
-$router = new \Bramus\Router\Router;
+$router = new \Bramus\Router\Router();
 
 /**
  * 管理端後台用
@@ -81,8 +80,28 @@ $router->mount('/api', function () use ($router) {
             $router->post('/store', 'ProductCategoryController@store');
             $router->put('/update/(\d+)', 'ProductCategoryController@update');
             $router->delete('/([\d+,]*)', 'ProductCategoryController@delete');
-
         });
+
+	    //option
+	    $router->mount('/option', function () use ($router) {
+		    //基本五大接口
+		    $router->get('/', 'ProductOptionController@lists');
+		    $router->get('/(\d+)', 'ProductOptionController@info');
+		    $router->post('/store', 'ProductOptionController@store');
+		    $router->put('/update/(\d+)', 'ProductOptionController@update');
+		    $router->delete('/([\d+,]*)', 'ProductOptionController@delete');
+		    $router->delete('/value/([\d+,]*)', 'ProductOptionController@deleteProductOptionValue');
+	    });
+
+	    //specification
+	    $router->mount('/specification', function () use ($router) {
+		    //基本五大接口
+		    $router->get('/', 'ProductSpecificationController@lists');
+		    $router->get('/(\d+)', 'ProductSpecificationController@info');
+		    $router->post('/store', 'ProductSpecificationController@store');
+		    $router->put('/update/(\d+)', 'ProductSpecificationController@update');
+		    $router->delete('/([\d+,]*)', 'ProductSpecificationController@delete');
+	    });
     });
 
 	//logRecord
@@ -97,6 +116,12 @@ $router->mount('/api', function () use ($router) {
 	$router->mount('/systemMenu', function () use ($router) {
 		//基本接口
 		$router->get('/config', 'SystemMenuController@config');
+	});
+
+	//system setting
+	$router->mount('/systemSetting', function () use ($router) {
+		//基本接口
+		$router->get('/config', 'SystemSettingController@config');
 	});
 
 	//media 多媒體
@@ -133,4 +158,3 @@ $router->before('GET|POST|PUT|DELETE', '/.*', function () use ($router) {
 });
 
 $router->run();
-

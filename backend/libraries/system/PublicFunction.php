@@ -72,7 +72,6 @@ class PublicFunction {
      * @since 0.0.1
      * @version 0.0.1
      * @param string $response
-     * @return string
      */
     public static function json( $response = [] , $status = '') {
         header('Content-Type: application/json; charset=utf-8');
@@ -155,7 +154,7 @@ class PublicFunction {
 	 *
 	 * @since 0.0.1
 	 * @version 0.0.1
-	 * @return string
+	 * @return mixed
 	 */
 	public static function getSystemCode() {
 		return self::$systemCode;
