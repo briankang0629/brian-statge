@@ -31,7 +31,10 @@ return [
         'stock' => [
             'stockCategory' => 'N',
         ],
-        'report' => [],
+        'report' => [
+            'saleReport' => 'N',
+            'orderReport' => 'N',
+        ],
         'order' => [
             'orderList' => 'N',
             'orderStatus' => 'N',

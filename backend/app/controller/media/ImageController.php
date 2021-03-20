@@ -30,7 +30,7 @@ class ImageController extends Controller {
 	 */
 	public function lists() {
 		//驗證權限
-		$this->permission('media/image' , 'V' , 'A');
+		$this->permission(['A'] , 'media/image' , 'V');
 
 		//宣告
 		$data = [];
@@ -59,7 +59,7 @@ class ImageController extends Controller {
 	 */
 	public function info( $id ) {
 		//驗證權限
-		$this->permission('media/image' , 'V' , 'A');
+		$this->permission(['A'] , 'media/image' , 'V');
 
 		//宣告
 		$mediaModel = new MediaModel();
@@ -81,7 +81,7 @@ class ImageController extends Controller {
 	 */
 	public function store() {
 		//驗證權限
-		$this->permission('media/image' , 'E' , 'A');
+		$this->permission(['A'] , 'media/image' , 'E');
 
 		//宣告
 		$mediaModel = new MediaModel();
@@ -202,7 +202,7 @@ class ImageController extends Controller {
 	 */
 	public function delete( $id ) {
 		//驗證權限
-		$this->permission('media/image' , 'E' , 'A');
+		$this->permission(['A'] , 'media/image' , 'E');
 
 		//宣告
 		$mediaModel = new MediaModel();
@@ -264,7 +264,7 @@ class ImageController extends Controller {
 	 */
 	public function setting() {
 		//驗證權限
-		$this->permission('media/image' , 'V' , 'A');
+		$this->permission(['A'] , 'media/image' , 'V');
 
 		//宣告
 		$mediaModel = new MediaModel();
@@ -284,7 +284,7 @@ class ImageController extends Controller {
 	 */
 	public function createFolder() {
 		//驗證權限
-		$this->permission('media/image' , 'E' , 'A');
+		$this->permission(['A'] , 'media/image' , 'E');
 
 		//宣告
 		$mediaModel = new MediaModel();

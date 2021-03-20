@@ -171,6 +171,7 @@ class Google {
 	 */
 	private function register( $user ) {
 		$data = [
+		    'parentId' => 1,
 			'name' => $user['name'],
 			'account' => $user['account'],
 			'password' => '',
@@ -179,6 +180,7 @@ class Google {
 			'type' => 'google',
 			'ip' => $this->db->escape(request::$server['REMOTE_ADDR']),
 			'createTime' => date('Y-m-d H:i:s'),
+            'sub' => 'Y',
 			'status' => 'Y',
 		];
 

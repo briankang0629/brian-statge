@@ -141,4 +141,19 @@ class UserModel extends Model {
     public function delete( $where ) {
         return $this->db->table($this->table)->delete()->where($where);
     }
+
+    //S == 客製化區塊 ========================================//
+
+    /**
+     * getUserTotal 獲取會員總數
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @return mixed
+     */
+    public function getUserTotal() {
+        return $this->db->table($this->table)->select($this->primaryKey)->where()->count;
+    }
+
+    //E == 客製化區塊 ========================================//
 }

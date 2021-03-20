@@ -30,7 +30,7 @@ class ProductController extends Controller {
 	 */
 	public function lists() {
 		//驗證權限
-		$this->permission('product/productList' , 'V' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'V');
 
 		//宣告
         $data = [];
@@ -71,7 +71,7 @@ class ProductController extends Controller {
 	 */
 	public function info( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'V' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'V');
 
 		//宣告
 		$productModel = new ProductModel();
@@ -133,7 +133,7 @@ class ProductController extends Controller {
 	 */
 	public function store() {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$logRecordData = [];
@@ -234,7 +234,7 @@ class ProductController extends Controller {
 	 */
 	public function update( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$logRecordData = [];
@@ -332,7 +332,7 @@ class ProductController extends Controller {
 	 */
 	public function delete( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$productModel = new ProductModel();
@@ -399,6 +399,177 @@ class ProductController extends Controller {
 	//----------------------------------------------------------------
 	//EndRegion API
 	//----------------------------------------------------------------
+
+    //----------------------------------------------------------------
+    // 客製化功能 API Start
+    //----------------------------------------------------------------
+
+    /**
+     * getProductViewed 取商品觀看數 @todo此功能屬於首頁數據模組
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @return string
+     */
+    public function getProductViewed() {
+        //驗證權限
+	    $this->permission(['A'] , 'product/productList' , 'V');
+
+        //宣告
+        $productModel = new ProductModel();
+
+        //取商品觀看數排序
+        publicFunction::json([
+            'data' => $productModel->getProductViewed(request::$get),
+        ] , 'success');
+    }
+
+    /**
+     * getSaleHotProduct 取商品熱銷排行
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @return string
+     */
+    public function getSaleHotProduct() {
+        //驗證權限
+        $this->permission(['U']);
+
+        //宣告
+        $orderModel = new OrderModel();
+        $mediaModel = new MediaModel();
+        $data = [];
+
+        //取商品圖片
+        foreach ($orderModel->getSaleHotProduct(request::$get) as $product) {
+            $product['picture'] = $mediaModel->getMedia($product['uploadId']);
+            $data[] = $product;
+        }
+
+        //取商品觀看數排序
+        publicFunction::json([
+            'data' => $data,
+        ] , 'success');
+    }
+
+	/**
+	 * getProductByCategory 依商品分類取商品
+	 *
+	 * @param int $productCategoryId
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 */
+	public function getProductByCategory( $productCategoryId ) {
+		//驗證權限
+		$this->permission(['U']);
+
+		//宣告
+		$data = [];
+		$mediaModel = new MediaModel();
+		$productModel = new ProductModel();
+        //S ==================== 商品處理 ==================== //
+
+		//商品列表
+		$productLists = $productModel->lists([
+		    'productCategoryId' => $productCategoryId,
+            'status' => 'Y',
+        ]);
+
+		//處理商品圖片
+		foreach($productLists as $product) {
+			//有上傳圖片
+			$product['picture'] = $mediaModel->getMedia($product['uploadId']);
+
+			//取商品所屬分類
+			foreach ($productModel->getProductCategoryByProductId($product['productId']) as $item) {
+				$product['category'][] = (int)$item['productCategoryId'];
+			}
+
+			//商品列表
+			$data[] = $product;
+		}
+
+        //E ==================== 商品處理 ==================== //
+
+		//取商品列表
+		publicFunction::json([
+			'data' => $data ,
+			'pagination' => $productModel->getPagination()
+		] , 'success');
+	}
+
+    /**
+     * getProduct 會員端依商品ID取商品
+     *
+     * @param int $productId
+     * @since 0.0.1
+     * @version 0.0.1
+     */
+    public function getProduct( $productId ) {
+        //驗證權限
+        $this->permission(['U']);
+
+        //驗證參數
+        validator::make(request::$get, [
+            'language' => 'required|in' . json_encode(publicFunction::getSystemCode()['language'])
+        ]);
+
+        //宣告
+        $mediaModel = new MediaModel();
+        $productModel = new ProductModel();
+        $productOptionModel = new ProductOptionModel();
+        //S ==================== 商品處理 ==================== //
+
+        //商品列表
+        $product = $productModel->info($productId);
+
+        //取商品詳細資料
+        $product['detail'] = $productModel->getProductDetailByLanguage($productId, request::$get['language']);
+
+        //取商品所屬分類
+        foreach ($productModel->getProductCategoryByProductId($productId) as $item) {
+            $product['category'][] = (int)$item['productCategoryId'];
+        }
+
+        //取商品圖片
+        $product['picture'] = $mediaModel->getMedia($product['uploadId']);
+
+        //取商品附加圖片
+        $product['relatedImage'] = $mediaModel->getMediaRelated($productId, 'product');
+
+        //取商品選項
+        if($product['productOption'] = $productOptionModel->lists(['productId' => $productId])) {
+            foreach ($product['productOption'] as $key => $option) {
+                //商品選項語系
+                $option['detail'] = $productOptionModel->getProductOptionDetailByLanguage($option['productOptionId'], request::$get['language']);
+
+                //商品選項值
+                $option['value'] = $productOptionModel->getProductOptionValue($option['productOptionId']);
+
+                //商品選項值語系
+                foreach ($option['value'] as $index => $value) {
+                    $value['detail'] = $productOptionModel->getProductOptionValueDetailByLanguage($value['productOptionValueId'], request::$get['language']);
+                    $option['value'][$index] = $value;
+                }
+
+                //存成新的陣列
+                $product['productOption'][$key] = $option;
+            }
+        }
+
+
+        //E ==================== 商品處理 ==================== //
+
+        //取商品列表
+        publicFunction::json([
+            'data' => $product ,
+        ] , 'success');
+    }
+
+
+    //----------------------------------------------------------------
+    // 客製化功能 API End
+    //----------------------------------------------------------------
 
     //----------------------------------------------------------------
     // 附屬函示 API Start
@@ -511,7 +682,7 @@ class ProductController extends Controller {
 			'costPrice' => 'required|number' ,
 			'price' => 'required|number' ,
 			'sortOrder' => 'required|int|lenMax:10' ,
-			'status' => 'required|in:Y&N' ,
+			'status' => 'required|in["Y" , "N"]' ,
 		];
 
 		//驗證
@@ -544,9 +715,9 @@ class ProductController extends Controller {
 				//驗證
 				validator::make($option , [
 					'productOptionId' => 'int' ,
-					'multiple' => 'in:Y&N' ,
+					'multiple' => 'in["Y" , "N"]' ,
 					'sortOrder' => 'int' ,
-					'required' => 'in:Y&N' ,
+					'required' => 'in["Y" , "N"]' ,
 					'detail' => 'array' ,
 					'value' => 'array' ,
 				]);
@@ -568,7 +739,7 @@ class ProductController extends Controller {
 							'quantity' => 'required|number' ,
 							'point' => 'required|number' ,
 							'weight' => 'required|number' ,
-							'isStock' => 'in:Y&N' ,
+							'isStock' => 'in["Y" , "N"]' ,
 							'detail' => 'array'
 						]);
 

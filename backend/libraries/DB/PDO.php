@@ -244,7 +244,7 @@ final class PDO {
 			//組成要搜尋的欄位
 			foreach($field as $key => $item) {
 				//若有指定前面的table 則不加上 EX:user.name
-				if((substr_count($item , '.')) || (substr_count($item , 'COUNT '))) {
+				if((substr_count($item , '.')) || (substr_count($item , 'COUNT')) || (substr_count($item , 'SUM'))) {
 					continue;
 				}
 
@@ -255,8 +255,8 @@ final class PDO {
 			//每個欄位用逗號分隔
 			$field = implode(',' , $field);
 		} else {
-			//計算COUNT在字符串中出現的次數
-			if(!substr_count($field , 'COUNT')) {
+			//計算COUNT,SUM在字符串中出現的次數
+			if(!substr_count($field , 'COUNT') && !substr_count($field , 'SUM')) {
 				$field = $this->table . '.' . $field . ' ';
 			}
 		}

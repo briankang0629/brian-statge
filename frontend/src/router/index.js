@@ -103,6 +103,11 @@ const routes = [
 				component: () => import( '@/pages/product/edit.vue'),
 				hide: true,
 			},
+			{
+				path: 'category',
+				name: 'productCategory',
+				component: () => import( '@/pages/productCategory/list.vue'),
+			},
 		]
 	},
 	{
@@ -115,6 +120,23 @@ const routes = [
 				name: 'image',
 				component: () => import( '@/pages/media/image.vue')
 			}
+		]
+	},
+	{
+		path: '/report',
+		name: 'report',
+		component: () => import( '@/pages/report/index.vue'),
+		children: [
+			{
+				path: 'saleReport',
+				name: 'saleReport',
+				component: () => import( '@/pages/report/saleReport.vue')
+			},
+			{
+				path: 'orderReport',
+				name: 'orderReport',
+				component: () => import( '@/pages/report/orderReport.vue')
+			},
 		]
 	},
 	{
@@ -159,7 +181,7 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
 	let checkSuccess = true
-	if (to.path == '/auth/google') {
+	if (to.path === '/auth/google') {
 		await router.app.$options.store.dispatch('checkAuthGoogle', to.query).then(() => {
 			checkSuccess = true
 			if (to.name === 'google') router.push('/')

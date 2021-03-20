@@ -1,11 +1,11 @@
 <template>
-    <section class="content" id="admin-list">
-        <div class="container-fluid">
+    <section class="content" id="product-list">
+        <div class="container-fluid" v-show="false">
             <!-- Tool Bar-->
             <div class="row">
                 <div class="col-sm-12">
                     <div class="float-sm-right" v-if="controlPermission === 'E'">
-                        <router-link :to="{ name : 'adminCreate' }" class="btn bg-success mr-3 mb-3">
+                        <router-link :to="{ name : 'productCreate' }" class="btn bg-success mr-3 mb-3">
                             <i class="fas fa-pen-nib"></i> {{ $t('common.create') }}
                         </router-link>
                         <a class="btn bg-danger mr-2 mb-3" @click="remove()" v-if="selected.length">
@@ -21,27 +21,35 @@
                     <div class="card-header">
                         <label class="badge bg-success">{{ $t('common.searchBar') }}</label>
                         <b-row class="justify-content-md-left">
-                            <!-- 帳號 -->
+                            <!-- 型號 -->
                             <b-col lg="2" md="6" sm="12" class="mt-3">
-                                <label class="mr-sm-2 ml-2">{{ $t('admin.account') }}：</label>
-                                <b-form-input class="mr-sm-2" v-model="sentData.account" :placeholder="$t('admin.account')"></b-form-input>
+                                <label class="mr-sm-2 ml-2">{{ $t('product.model') }}：</label>
+                                <b-form-input class="mr-sm-2" v-model="sentData.model" :placeholder="$t('product.model')"></b-form-input>
                             </b-col>
 
-                            <!-- 姓名 -->
+                            <!-- 名稱 -->
                             <b-col lg="2" md="6" sm="12" class="mt-3">
-                                <label class="mr-sm-2 ml-2">{{ $t('admin.name') }}：</label>
-                                <b-form-input class="mr-sm-2" v-model="sentData.name" :placeholder="$t('admin.name')"></b-form-input>
+                                <label class="mr-sm-2 ml-2">{{ $t('product.name') }}：</label>
+                                <b-form-input class="mr-sm-2" v-model="sentData.name" :placeholder="$t('product.name')"></b-form-input>
                             </b-col>
 
-                            <!-- email -->
+                            <!-- 語系 -->
                             <b-col lg="2" md="6" sm="12" class="mt-3">
-                                <label class="mr-sm-2 ml-2">{{ $t('admin.email') }}：</label>
-                                <b-form-input class="mr-sm-2" v-model="sentData.email" :placeholder="$t('admin.email')"></b-form-input>
+                                <label class="mr-sm-2 ml-2">{{ $t('product.language') }}：</label>
+                                <b-form-select v-model="sentData.language">
+                                    <option v-for="(item, index) in $t('language')" :value="index" :key="index">
+                                        {{item}}
+                                    </option>
+                                    <template #first>
+                                        <b-form-select-option :value="null">-- {{ $t('common.choose') }} --
+                                        </b-form-select-option>
+                                    </template>
+                                </b-form-select>
                             </b-col>
 
                             <!-- 狀態 -->
                             <b-col lg="2" md="6" sm="12" class="mt-3">
-                                <label class="mr-sm-2 ml-2">{{ $t('admin.status') }}：</label>
+                                <label class="mr-sm-2 ml-2">{{ $t('product.status') }}：</label>
                                 <b-form-select v-model="sentData.status">
                                     <option v-for="(item, index) in $t('status')" :value="index" :key="index">
                                         {{item}}
@@ -53,11 +61,11 @@
                                 </b-form-select>
                             </b-col>
 
-                            <!-- 權限 -->
+                            <!-- 商品分類 -->
                             <b-col lg="2" md="6" sm="12" class="mt-3">
-                                <label class="mr-sm-2 ml-2">{{ $t('admin.permission') }}：</label>
-                                <b-form-select v-model="sentData.permissionId">
-                                    <option v-for="(item, index) in permission" :value="item.permissionId" :key="index">
+                                <label class="mr-sm-2 ml-2">{{ $t('product.productCategory') }}：</label>
+                                <b-form-select v-model="sentData.productCategoryId">
+                                    <option v-for="(item, index) in productCategory" :value="item.productCategoryId" :key="index">
                                         {{item.name}}
                                     </option>
                                     <template #first>
@@ -69,9 +77,9 @@
 
                             <!-- 搜尋 -->
                             <b-col lg="2" md="6" sm="12" class="mt-3">
-                                <label class="mr-sm-2 ml-2">{{ $t('admin.operate') }} ：</label>
+                                <label class="mr-sm-2 ml-2">{{ $t('product.operate') }} ：</label>
                                 <div class="col-sm-12">
-                                    <b-button variant="outline-success" class="my-2 my-sm-0 ml-2" @click="getAdmin()"> <i class="fas fa-search"></i> {{ $t('message.search') }}</b-button>
+                                    <b-button variant="outline-success" class="my-2 my-sm-0 ml-2" @click="getProduct()"><i class="fas fa-search"></i> {{ $t('message.search') }}</b-button>
                                 </div>
                             </b-col>
                         </b-row>
@@ -81,52 +89,58 @@
                         <table class="table table-hover table-striped text-nowrap table-bordered">
                             <thead>
                                 <tr>
-                                <th v-if="controlPermission === 'E'" >{{ $t('common.select') }}</th>
-                                <th>{{ $t('common.image') }}</th>
-                                <th>{{ $t('admin.adminId') }}</th>
-                                <th>{{ $t('admin.name') }}</th>
-                                <th>{{ $t('admin.account') }}</th>
-                                <th>{{ $t('admin.permission') }}</th>
-                                <th>{{ $t('admin.email') }}</th>
-                                <th>{{ $t('admin.createTime') }}</th>
-                                <th>{{ $t('admin.isSub') }}</th>
-                                <th>{{ $t('admin.status') }}</th>
-                                <th>{{ $t('admin.operate') }}</th>
-                            </tr>
+                                    <th v-if="controlPermission === 'E'" >{{ $t('common.select') }}</th>
+                                    <th>{{ $t('common.image') }}</th>
+                                    <th>{{ $t('product.productId') }}</th>
+                                    <th>{{ $t('product.model') }}</th>
+                                    <th>{{ $t('product.name') }}</th>
+                                    <th>{{ $t('product.costPrice') }}</th>
+                                    <th>{{ $t('product.price') }}</th>
+                                    <th>{{ $t('product.productCategory') }}</th>
+                                    <th>{{ $t('product.view') }}</th>
+                                    <th>{{ $t('product.sortOrder') }}</th>
+                                    <th>{{ $t('product.createTime') }}</th>
+                                    <th>{{ $t('product.status') }}</th>
+                                    <th>{{ $t('product.operate') }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(data, index) in adminList" :key="index">
-                                <td v-if="controlPermission === 'E'"><input type="checkbox" :value="data.adminId" v-model="selected"/></td>
-                                <td class="admin-image">
-                                    <b-img :src="data.picture" alt="admin-image" v-if="data.picture"></b-img>
-                                    <b-img :src="notFound" alt="notFound-image" v-else></b-img>
-                                </td>
-                                <td>{{data.adminId}}</td>
-                                <td>{{data.name}}</td>
-                                <td>{{data.account}}</td>
-                                <td>{{data.permission}}</td>
-                                <td>{{data.email}}</td>
-                                <td>{{data.createTime}}</td>
-                                <td><span class="badge"
-                                          :class="classStatus(data.sub)">{{ $t('sub.' + data.sub) }}</span>
+                                <tr v-for="(data, index) in productList" :key="index">
+                                    <td v-if="controlPermission === 'E'"><input type="checkbox" :value="data.productId" v-model="selected"/></td>
+                                    <td class="product-image">
+                                        <b-img :src="data.picture" alt="product-image" v-if="data.picture"></b-img>
+                                        <b-img :src="notFound" alt="notFound-image" v-else></b-img>
                                     </td>
-                                <td><span class="badge"
-                                          :class="classStatus(data.status)">{{$t('status.' + data.status)}}</span>
-                                </td>
-                                <td>
-                                    <router-link :to="{ name: 'adminEdit', params: { id: data.adminId }}" class="btn btn-primary">
-                                        <span v-if="controlPermission === 'E'">
-                                            <i class="fas fa-pencil-alt"></i> {{ $t('common.edit') }}
+                                    <td>{{data.productId}}</td>
+                                    <td>{{data.model}}</td>
+                                    <td>{{data.name}}</td>
+                                    <td>{{data.costPrice}}</td>
+                                    <td>{{data.price}}</td>
+                                    <td style="white-space: normal;">
+                                        <span v-for="(sort, key) in data.category" class="badge bg-success mr-2" :key="key">
+                                            {{ categories[sort] }}
                                         </span>
-                                        <span v-if="controlPermission === 'V'">
-                                            <i class="fas fa-eye"></i> {{ $t('common.view') }}
-                                        </span>
-                                    </router-link>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td>{{data.view}}</td>
+                                    <td>{{data.sortOrder}}</td>
+                                    <td>{{data.createTime}}</td>
+                                    <td><span class="badge"
+                                              :class="classStatus(data.status)">{{$t('status.' + data.status)}}</span>
+                                    </td>
+                                    <td>
+                                        <router-link :to="{ name: 'productEdit', params: { id: data.productId }}" class="btn btn-primary">
+                                            <span v-if="controlPermission === 'E'">
+                                                <i class="fas fa-pencil-alt"></i> {{ $t('common.edit') }}
+                                            </span>
+                                            <span v-if="controlPermission === 'V'">
+                                                <i class="fas fa-eye"></i> {{ $t('common.view') }}
+                                            </span>
+                                        </router-link>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
-                        <div v-if="!isLoading && !adminList.length" class="text-notfound text-center">
+                        <div v-if="!isLoading && !productList.length" class="text-notfound text-center">
                             <span class="text-danger">
                                 {{ $t('common.notFound') }}
                             </span>
@@ -139,7 +153,7 @@
                                     :total-rows="pagination.total"
                                     :per-page="pagination.perPage"
                                     aria-controls="my-table"
-                                    @input="getAdmin()"
+                                    @input="getProduct()"
                             ></b-pagination>
                         </ul>
                     </div>
@@ -157,48 +171,47 @@
         layout: 'admin',
         data() {
             return {
+                //分頁資料
                 pagination: {
                     page: 1,
                     perPage: 10,
                     total: 0,
                     totalPage: 0,
                 },
-                adminList: {},
-                admin: {
-                    status: null,
-                    permissionId: null,
-                    password: '',
-                },
-                permission: [],
-                method: '',
+                //商品清單
+                productList: {},
+                //商品分類
+                productCategory: {},
+                //狀態列的class
                 classStatus: (status) => [
                     {'bg-success': status === 'Y'},
                     {'bg-danger': status === 'N'},
-                    {'bg-warning': status === 'U'}
                 ],
+                //商品分類依k&v格式組合成的陣列
+                categories:{},
                 //選擇
                 selected: [],
                 //notfound-image
 	            notFound: notFound,
                 //請求參數
-                sentData:{
-                    account:'',
+                sentData: {
+                    model:'',
                     name:'',
-                    status:null,
-                    permissionId:null,
-                    email:''
+                    language: null,
+                    status: null,
+                    productCategoryId: null,
                 },
                 //loading
                 isLoading: false,
                 //操作的權限
-                controlPermission: ''
+                controlPermission: '',
             }
         },
         computed: {},
         mounted() {
         	//todo 因demo開放google登入 指開放讀得權限 到時關閉第三方後台登入再拿掉
             this.controlPermission = localStorage.getItem('permission') ?
-	            JSON.parse(localStorage.getItem('permission')).admin.adminList : 'V'
+	            JSON.parse(localStorage.getItem('permission')).product.productList : 'V'
 
             //init
             this.init();
@@ -213,36 +226,36 @@
              */
             init() {
                 return Promise.all([
-                    this.getAdmin(),
-                    this.getPermission()
+                    this.getProduct(),
+                    this.getProductCategory()
                 ])
             },
 
             /**
-             * getAdmin 取管理者
+             * getProduct 取商品
              *
              * @since 0.0.1
              * @version 0.0.1
              */
-            getAdmin() {
+            getProduct() {
                 this.isLoading = true
                 const request = {
                     method: 'get',
-                    url: '/api/admin',
+                    url: '/api/product',
                     params: {
                         page: this.pagination.page,
                         perPage: this.pagination.perPage
                     }
                 }
 
-                if(this.sentData.account !== '') request.params.account = this.sentData.account
+                if(this.sentData.model !== '') request.params.model = this.sentData.model
                 if(this.sentData.name !== '') request.params.name = this.sentData.name
-                if(this.sentData.email !== '') request.params.email = this.sentData.email
+                if(this.sentData.language !== '') request.params.language = this.sentData.language
                 if(this.sentData.status !== '') request.params.status = this.sentData.status
-                if(this.sentData.permissionId !== '') request.params.permissionId = this.sentData.permissionId
+                if(this.sentData.productCategoryId !== '') request.params.productCategoryId = this.sentData.productCategoryId
 
                 this.$store.dispatch('authRequest', request).then((response) => {
-                    this.adminList = response.data
+                    this.productList = response.data
                     this.pagination.page = response.pagination.page
                     this.pagination.perPage = response.pagination.perPage
                     this.pagination.total = response.pagination.total
@@ -254,21 +267,25 @@
             },
 
             /**
-             * getPermission 取權限
+             * getProductCategory 取商品分類
              *
              * @since 0.0.1
              * @version 0.0.1
              */
-            getPermission() {
+            getProductCategory() {
                 const request = {
                     method: 'get',
-                    url: '/api/permission',
+                    url: '/api/product/category',
                 }
 
                 this.$store.dispatch('authRequest', request).then((response) => {
-                    this.permission = response.data;
+                    this.productCategory = response.data;
+
+                    response.data.forEach((data) => {
+                        this.categories[data.productCategoryId] =  data.name
+                    })
                 }).catch((error) => {
-	                this.$root.notify(error)
+	                this.$root.notify(error);
                 })
             },
 
@@ -279,37 +296,38 @@
              * @version 0.0.1
              */
             remove() {
-	            let askSetting = {
+                let askSetting = {
 		            title: this.$t('message.askDelete'),
 		            text: this.$t('message.askDeleteMessage'),
-		            confirmText: this.$t('common.confirm'),
+                    confirmText: this.$t('common.confirm'),
 		            cancelText: this.$t('common.cancel'),
-	            }
+                }
 
-	            //詢問刪除
-	            this.$Swal.ask(askSetting).then((result) => {
+                //詢問刪除
+                this.$Swal.ask(askSetting).then((result) => {
                     if (result.isConfirmed) {
                         this.isLoading = true
-                        let adminId = this.selected.join(',')
+                        let productId = this.selected.join(',')
                         //請求刪除
                         const request = {
                             method: 'delete',
-                            url: '/api/admin/' + adminId,
+                            url: '/api/product/' + productId,
                         }
 
                         //請求刪除前驗證
                         this.$store.dispatch('authRequest', request).then((response) => {
-	                        this.$root.notify(response)
-                            this.getAdmin()
+	                        this.$root.notify(response);
+
+                            this.getProduct()
                         }).catch((error) => {
-	                        this.$root.notify(error)
+	                        this.$root.notify(error);
+
                             this.isLoading = false
                         })
                     }
                     //請空選擇
                     this.selected = []
                 })
-
             }
         }
     }

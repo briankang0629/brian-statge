@@ -308,7 +308,7 @@
 
                 //開始上傳
                 this.$refs.uploadImage.upload(this.uploadUrl, this.uploadHeaders, this.imageRecordsForUpload).then((response) => {
-	                this.$root.notify(response)
+	                this.$root.notify(response[0].data)
 
                     //清除圖片
                     this.imageRecords = []

@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover table-striped text-nowrap">
+                        <table class="table table-hover table-striped text-nowrap table-bordered">
                             <thead>
                             <tr>
                                 <th v-if="controlPermission === 'E'">{{ $t('common.select') }}</th>

@@ -30,7 +30,7 @@ class ProductSpecificationController extends Controller {
 	 */
 	public function lists() {
 		//驗證權限
-		$this->permission('product/productList' , 'V' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'V');
 
 		//宣告
         $data = [];
@@ -69,7 +69,7 @@ class ProductSpecificationController extends Controller {
 	 */
 	public function info( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'V' , 'A');
+		$this->permission(['A'] ,'product/productList' ,  'V');
 
 		//宣告
 		$productModel = new ProductModel();
@@ -109,7 +109,7 @@ class ProductSpecificationController extends Controller {
 	 */
 	public function store() {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$logRecordData = [];
@@ -125,7 +125,7 @@ class ProductSpecificationController extends Controller {
 			'costPrice' => 'required|number' ,
 			'price' => 'required|number' ,
 			'sortOrder' => 'required|int|lenMax:10' ,
-			'status' => 'required|in:Y&N' ,
+			'status' => 'required|in["Y" , "N"]' ,
 		];
 
 		//驗證
@@ -233,7 +233,7 @@ class ProductSpecificationController extends Controller {
 	 */
 	public function update( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$logRecordData = [];
@@ -248,7 +248,7 @@ class ProductSpecificationController extends Controller {
 			'costPrice' => 'number' ,
 			'price' => 'number' ,
 			'sortOrder' => 'int|lenMax:10' ,
-			'status' => 'in:Y&N' ,
+			'status' => 'in["Y" , "N"]' ,
 		];
 
 		//驗證
@@ -355,7 +355,7 @@ class ProductSpecificationController extends Controller {
 	 */
 	public function delete( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$productModel = new ProductModel();

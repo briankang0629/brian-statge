@@ -37,7 +37,7 @@ class ProductCategoryModel extends Model {
 
 	/** @var array 預設欄位 */
 	protected $filed = [
-		'productCategoryId' , 'parentId', 'status', 'sortOrder', 'createTime' , 'updateTime'
+		'productCategoryId' , 'parentId', 'status', 'sortOrder', 'createTime' , 'updateTime', 'family' , 'level'
 	];
 
 	/** @var string primary 主鍵 */
@@ -160,6 +160,23 @@ class ProductCategoryModel extends Model {
     public function getProductCategoryDetail( $productCategoryId ) {
         return $this->db->table('productCategoryDetail')->select(['name' , 'language' , 'metaTitle' , 'metaKeyword', 'metaDescription'])->where(['productCategoryId', '=' , $productCategoryId])->rows;
     }
+
+    /**
+     * getProductCategoryDetailByLanguage 依ID與語系取商品分類詳細資料
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param int $productCategoryId
+     * @param string $language
+     * @return mixed
+     */
+    public function getProductCategoryDetailByLanguage( $productCategoryId , $language = 'zh-tw') {
+        return $this->db->table('productCategoryDetail')->select(['name' , 'language' , 'description' , 'metaTitle' , 'metaKeyword', 'metaDescription'])->where([
+            [ 'productCategoryId', '=' , $productCategoryId ],
+            [ 'language', '=' , $language ],
+        ])->row;
+    }
+
 
     /**
      * getProductByProductCategoryId 依商品分類ID取商品數量

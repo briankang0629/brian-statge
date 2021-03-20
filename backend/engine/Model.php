@@ -234,6 +234,9 @@ abstract class Model {
                     case 'json':
                         $data[$key][$field] = json_decode($data[$key][$field], true);
                         break;
+                    case 'numberFormat':
+                        $data[$key][$field] = number_format($data[$key][$field]);
+                        break;
                     default:
                         break;
                 }

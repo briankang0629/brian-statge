@@ -171,6 +171,22 @@ class ProductModel extends Model {
 		return $this->db->table('productDetail')->select(['name' , 'description' , 'language' , 'metaTitle' , 'metaKeyword', 'metaDescription'])->where(['productId' , ' = ' , $productId])->rows;
     }
 
+    /**
+     * getProductDetailByLanguage 依ID取及語系商品詳細資料
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param int $productId
+     * @param string $language
+     * @return mixed
+     */
+    public function getProductDetailByLanguage( $productId , $language = 'zh-tw' ) {
+        return $this->db->table('productDetail')->select(['name' , 'description' , 'language' , 'metaTitle' , 'metaKeyword', 'metaDescription'])->where([
+            ['productId' , ' = ' , $productId],
+            ['language' , ' = ' , $language],
+        ])->row;
+    }
+
 	/**
 	 * storeProductDetail 新增商品詳細資料
 	 *
@@ -206,6 +222,41 @@ class ProductModel extends Model {
      */
     public function getProductCategoryByProductId( $productId ) {
         return $this->db->table('productToCategory')->select('productCategoryId')->where(['productId', '=' , $productId])->rows;
+    }
+
+    /**
+     * getProductViewed 取商品觀看數
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param array $data
+     * @return mixed
+     */
+    public function getProductViewed( $data = array() ) {
+        $where = [];
+
+        //沒有指定語系選擇預設語系
+        if(!isset($data['language'])) {
+            $where[] = ['language' , '=' , publicFunction::getSystemCode()['defaultLanguage']];
+        } else {
+            $where[] = ['language' , '=' , $data['language']];
+        }
+
+        //關聯欄位設定
+        $this->filed = ['pd.name' , 'view'];
+
+        //宣告頁碼class
+        $this->makePagination($this->primaryKey , $data , $where , [
+            ['table' => 'productDetail', 'joinKey' => 'productId'],
+        ], $this->primaryKey);
+
+        //回傳
+        return $this->makeCast($this->db->table($this->table)->select($this->filed)
+            ->join('productDetail pd', $this->primaryKey)
+            ->where($where , true)
+            ->groupBy($this->primaryKey , true)
+            ->orderBy('view' , 'DESC' , true)
+            ->limit($this->pagination->start , $this->pagination->perPage)->rows);
     }
 
 	/**

@@ -86,7 +86,7 @@
 
                     </div>
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover table-striped text-nowrap">
+                        <table class="table table-hover table-striped text-nowrap table-bordered">
                             <thead>
                                 <tr>
                                     <th v-if="controlPermission === 'E'" >{{ $t('common.select') }}</th>
@@ -97,6 +97,7 @@
                                     <th>{{ $t('product.costPrice') }}</th>
                                     <th>{{ $t('product.price') }}</th>
                                     <th>{{ $t('product.productCategory') }}</th>
+                                    <th>{{ $t('product.view') }}</th>
                                     <th>{{ $t('product.sortOrder') }}</th>
                                     <th>{{ $t('product.createTime') }}</th>
                                     <th>{{ $t('product.status') }}</th>
@@ -120,6 +121,7 @@
                                             {{ categories[sort] }}
                                         </span>
                                     </td>
+                                    <td>{{data.view}}</td>
                                     <td>{{data.sortOrder}}</td>
                                     <td>{{data.createTime}}</td>
                                     <td><span class="badge"

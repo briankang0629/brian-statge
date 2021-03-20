@@ -40,4 +40,7 @@ return [
         'logoutSuccess' => '登出成功',
         'error'         => '傳送參數有誤',
     ],
+    'report' => [
+        'season' => '第 %s 季'
+    ],
 ];

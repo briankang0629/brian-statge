@@ -29,7 +29,7 @@ class UserGroupController extends Controller
      */
     public function lists() {
         //驗證權限
-        $this->permission('user/userGroup','V','A');
+        $this->permission(['A'] , 'user/userGroup' , 'V');
 
 	    //宣告
 	    $userGroupModel = new UserGroupModel();
@@ -51,7 +51,7 @@ class UserGroupController extends Controller
      */
     public function info($id) {
         //驗證權限
-        $this->permission('user/userGroup','V','A');
+	    $this->permission(['A'] , 'user/userGroup' , 'V');
 
 	    //宣告
 	    $userGroupModel = new UserGroupModel();
@@ -73,7 +73,7 @@ class UserGroupController extends Controller
 	 */
 	public function store() {
         //驗證權限
-        $this->permission('user/userGroup','E','A');
+		$this->permission(['A'] , 'user/userGroup' , 'E');
     }
 
     /**
@@ -86,7 +86,7 @@ class UserGroupController extends Controller
      */
     public function update($id) {
         //驗證權限
-        $this->permission('user/userGroup','E','A');
+	    $this->permission(['A'] , 'user/userGroup' , 'E');
     }
     //----------------------------------------------------------------
     //EndRegion API

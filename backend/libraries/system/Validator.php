@@ -224,7 +224,7 @@ class Validator
                 break;
 	        case strtolower(substr($rule, 0, 2)) == 'in' :
 		        //取得要比對的數值
-		        $explode = explode('&', explode(':', $rule)[1]);
+		        $explode = json_decode(explode('in', $rule)[1] , true);
 
 		        //比對有無在此陣列值
 		        if (!in_array($data[$key] , $explode)) {

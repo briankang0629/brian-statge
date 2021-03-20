@@ -7,14 +7,14 @@
 					<!-- small box -->
 					<div class="small-box bg-info">
 						<div class="inner">
-							<h3>150</h3>
+							<h3>{{ dashboard.orderTotal }}</h3>
 
-							<p>New Orders</p>
+							<p>{{ $t('dashboard.orderCount') }}</p>
 						</div>
 						<div class="icon">
-							<i class="ion ion-bag"></i>
+                            <i class="fas fa-shopping-bag"></i>
 						</div>
-						<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						<a href="#" class="small-box-footer">{{ $t('dashboard.seeMore') }} <i class="fas fa-arrow-circle-right"></i></a>
 					</div>
 				</div>
 				<!-- ./col -->
@@ -22,14 +22,14 @@
 					<!-- small box -->
 					<div class="small-box bg-success">
 						<div class="inner">
-							<h3>53<sup style="font-size: 20px">%</sup></h3>
+							<h3>{{ dashboard.orderSale }}<sup style="font-size: 5px">NT$</sup></h3>
 
-							<p>Bounce Rate</p>
+							<p>{{ $t('dashboard.saleCount') }}</p>
 						</div>
 						<div class="icon">
-							<i class="ion ion-stats-bars"></i>
+                            <i class="fas fa-wallet"></i>
 						</div>
-						<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						<a href="#" class="small-box-footer">{{ $t('dashboard.seeMore') }} <i class="fas fa-arrow-circle-right"></i></a>
 					</div>
 				</div>
 				<!-- ./col -->
@@ -37,14 +37,13 @@
 					<!-- small box -->
 					<div class="small-box bg-warning">
 						<div class="inner">
-							<h3>44</h3>
-
-							<p>User Registrations</p>
+							<h3>{{ dashboard.userTotal }}</h3>
+							<p>{{ $t('dashboard.userCount') }}</p>
 						</div>
 						<div class="icon">
-							<i class="ion ion-person-add"></i>
+                            <i class="fas fa-users"></i>
 						</div>
-						<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						<a href="#" class="small-box-footer">{{ $t('dashboard.seeMore') }} <i class="fas fa-arrow-circle-right"></i></a>
 					</div>
 				</div>
 				<!-- ./col -->
@@ -52,23 +51,24 @@
 					<!-- small box -->
 					<div class="small-box bg-danger">
 						<div class="inner">
-							<h3>65</h3>
+							<h3>0</h3>
 
-							<p>Unique Visitors</p>
+							<p>{{ $t('dashboard.userRegisterCount') }}</p>
 						</div>
 						<div class="icon">
-							<i class="ion ion-pie-graph"></i>
+                            <i class="fas fa-user-clock"></i>
 						</div>
-						<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						<a href="#" class="small-box-footer">{{ $t('dashboard.seeMore') }} <i class="fas fa-arrow-circle-right"></i></a>
 					</div>
 				</div>
 				<!-- ./col -->
 			</div>
+            <!-- chart -->
 			<div class="row">
 				<div class="col-lg-6 col-12">
 					<div class="card card-danger">
 						<div class="card-header">
-							<h3 class="card-title">Line Chart</h3>
+							<h3 class="card-title"> <i class="fas fa-chart-bar"></i> {{ $t('dashboard.saleRecord') }}</h3>
 
 							<div class="card-tools">
 								<button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -87,7 +87,7 @@
 				<div class="col-lg-6 col-12">
 					<div class="card card-success">
 						<div class="card-header">
-							<h3 class="card-title">Donut Chart</h3>
+							<h3 class="card-title"><i class="fas fa-chart-bar"></i> {{ $t('dashboard.productView') }}</h3>
 
 							<div class="card-tools">
 								<button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -114,105 +114,185 @@
 		components: {
 			breadcrumb: () => import('@/components/common/breadcrumb.vue'),
 		},
+		data() {
+			return {
+				'dashboard': {
+					'orderTotal' : 0,
+					'orderSale' : 0,
+					'userTotal' : 0,
+				}
+			}
+		},
 		mounted() {
-			let ctx1 = document.getElementById("myChart");
-			let ctx2 = document.getElementById("DonutChart");
-
-			/**
-			 * myChart
-			 */
-			let myChart = new Chart(ctx1, {// eslint-disable-line no-unused-vars
-				type: "line",
-				data: {
-					labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-					datasets: [
-						{
-							label: "test1",
-							backgroundColor: "rgba(225,10,10,0.3)",
-							borderColor: "rgba(225,103,110,1)",
-							borderWidth: 1,
-							pointStrokeColor: "#fff",
-							pointStyle: "crossRot",
-							data: [65, 59, 0, 81, 56, 10, 40, 22, 32, 54, 10, 30],
-							cubicInterpolationMode: "monotone",
-							spanGaps: "false",
-							fill: "false"
-						}
-					]
-				},
-				options: {
-
-				}
-
-			});
-
-			/**
-			 *
-			 */
-			let DonutChart = new Chart(ctx2, {// eslint-disable-line no-unused-vars
-				type: "doughnut",
-				data: {
-					// These labels appear in the legend and in the tooltips when hovering different arcs
-					labels: [
-						'Red',
-						'Yellow',
-						'Blue'
-					],
-					datasets: [{
-						data: [10, 20, 30],
-						backgroundColor: [
-							'#FA0001',
-							'green',
-							'skyblue',
-						],
-					}]
-				},
-				options: {
-
-				}
-			});
-
+            //init
+            this.init();
 		},
 		methods: {
-			click() {
-				console.log(this.$store.state.auth)
-				this.$Swal.fire({
-					icon: 'error',
-					title: 'Error',
-					text: 'error msg'
+
+            /**
+             * init 初始化
+             *
+             * @since 0.0.1
+             * @version 0.0.1
+             */
+            init() {
+                return Promise.all([
+                    this.getOrderByMonth(),
+                    this.getProductView(),
+                    this.getOrderTotal(),
+                    this.getOrderSale(),
+                    this.getUserTotal()
+                ])
+            },
+
+            /**
+             * getOrderByMonth 月銷售訂單
+             *
+             * @since 0.0.1
+             * @version 0.0.1
+             */
+            getOrderByMonth() {
+                const request = {
+                    method: 'get',
+                    url: '/api/order/report/groupBy/month',
+                }
+
+                this.$store.dispatch('authRequest', request).then((response) => {
+                    new Chart(document.getElementById("myChart"), {
+                        type: "line",
+                        data: {
+                            labels: response.data.map(function (item) {
+                                return item.month;
+                            }),
+                            datasets: [
+                                {
+                                    label: this.$t('dashboard.orderCount'),
+                                    backgroundColor: "rgba(225,10,10,0.3)",
+                                    borderColor: "rgba(225,103,110,1)",
+                                    borderWidth: 1,
+                                    pointStrokeColor: "#fff",
+                                    pointStyle: "crossRot",
+                                    data: response.data.map(function (item) {
+                                        return item.total;
+                                    }),
+                                    cubicInterpolationMode: "monotone",
+                                    spanGaps: "false",
+                                    fill: "false"
+                                }
+                            ]
+                        },
+                        options: {
+
+                        }
+
+                    });
+                }).catch((error) => {
+                    this.$root.notify(error)
+                })
+
+            },
+
+            /**
+             * getProductView 商品觀看數
+             *
+             * @since 0.0.1
+             * @version 0.0.1
+             */
+            getProductView() {
+                const request = {
+                    method: 'get',
+                    url: '/api/product/view',
+                    params: {
+                        perPage: 5
+                    }
+                }
+
+                this.$store.dispatch('authRequest', request).then((response) => {
+                    new Chart(document.getElementById("DonutChart"), {
+                        type: "doughnut",
+                        data: {
+                            labels: response.data.map(function (item) {
+                                return item.name;
+                            }),
+                            datasets: [
+                                {
+                                    data: response.data.map(function (item) {
+                                        return item.view;
+                                    }),
+                                    backgroundColor: [
+                                        'red',
+                                        'green',
+                                        'skyblue',
+                                        'pink',
+                                        'yellow',
+                                    ],
+                                }
+                            ]
+                        },
+                        options: {}
+                    })
+
+                }).catch((error) => {
+                    this.$root.notify(error)
+                })
+
+            },
+
+			/**
+			 * getOrderTotal 訂單總數
+			 *
+			 * @since 0.0.1
+			 * @version 0.0.1
+			 */
+			getOrderTotal() {
+				const request = {
+					method: 'get',
+					url: '/api/order/report/total',
+				}
+
+				this.$store.dispatch('authRequest', request).then((response) => {
+					this.dashboard.orderTotal = response.data.total
+				}).catch((error) => {
+					this.$root.notify(error)
 				})
 			},
-			mounted() {
-				this.$store.dispatch('checkAuth')
-			},
-			clickApi() {
-				this.axios
-					.get('/v1/bpi/currentprice.json')
-					.then(response => {
-						console.log(response.data.bpi);
-						this.info = response.data.bpi
-					})
-					.catch(error => {
-						console.log(error)
-						this.errored = true
-					})
-					.finally(() => this.loading = false)
 
-				// let Request = {
-				//     Method: 'get',
-				//     Uri: '/v1/bpi/currentprice.json',
-				//     Params: {}
-				// }
-				// this.$store.dispatch('AuthRequest', Request).then((Response) => {
-				//     console.log(Response);
-				//     // this.PriceStrategiesList = Response.data
-				//     // this.PageData.currentPage = Response.pagination.page
-				//     // this.PageData.perPage = Response.pagination.perPage
-				//     // this.PageData.totalItems = Response.pagination.totalItems
-				//     // this.PageData.totalPages = Response.pagination.totalPages
-				// }).catch((Error) => {
-				//     alert(Error)
-				// })
+			/**
+			 * getOrderSale 訂單銷量
+			 *
+			 * @since 0.0.1
+			 * @version 0.0.1
+			 */
+			getOrderSale() {
+				const request = {
+					method: 'get',
+					url: '/api/order/report/sale',
+				}
+
+				this.$store.dispatch('authRequest', request).then((response) => {
+					this.dashboard.orderSale = response.data.total
+				}).catch((error) => {
+					this.$root.notify(error)
+				})
+			},
+
+			/**
+			 * getUserTotal 會員總數
+			 *
+			 * @since 0.0.1
+			 * @version 0.0.1
+			 */
+			getUserTotal() {
+				const request = {
+					method: 'get',
+					url: '/api/user/report/total',
+				}
+
+				this.$store.dispatch('authRequest', request).then((response) => {
+					this.dashboard.userTotal = response.data.total
+				}).catch((error) => {
+					this.$root.notify(error)
+				})
 			},
 		}
 	}

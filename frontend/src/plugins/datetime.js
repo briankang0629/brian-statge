@@ -83,6 +83,20 @@ Vue.use({
 				return `${this.year()}-${this.month()}-${this.day()}`
 			},
 			/**
+			 * 取當月第一天
+			 */
+			monthFirstDate() {
+				return `${this.year()}-${this.month()}-${this.day(new Date().setDate(1))}`
+			},
+			/**
+			 * 取當月最後一天
+			 */
+			monthLastDate() {
+				let date = new Date();
+				let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+				return `${this.year()}-${this.month()}-${this.day(new Date().setDate(lastDay))}`
+			},
+			/**
 			 * 取當前時間
 			 *
 			 * @param {int} unixTimeStamp 毫秒時間戳

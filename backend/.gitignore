@@ -3,3 +3,4 @@ view/cache
 .DS_Store
 .idea
 /vendor
+storage/google/credentials.json

@@ -63,8 +63,8 @@
 		data() {
 			return {
 				user: {
-					account: '',
-					password: '',
+					account: 'demo',
+					password: 'demo',
 				},
 				rememberAccount: false
 			}

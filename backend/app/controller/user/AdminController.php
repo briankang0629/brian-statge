@@ -31,7 +31,7 @@ class AdminController extends Controller
      */
     public function lists() {
         //驗證權限
-        $this->permission('admin/adminList','V','A');
+        $this->permission(['A'] , 'admin/adminList' , 'V');
 
         //宣告
 	    $data = [];
@@ -68,7 +68,7 @@ class AdminController extends Controller
      */
     public function info($id) {
         //驗證權限
-        $this->permission('admin/adminList','V','A');
+	    $this->permission(['A'] , 'admin/adminList' , 'V');
 
 	    //宣告
 	    $adminModel = new AdminModel();
@@ -99,7 +99,7 @@ class AdminController extends Controller
 	 */
 	public function store() {
         //驗證權限
-        $this->permission('admin/adminList','E','A');
+		$this->permission(['A'] , 'admin/adminList' , 'E');
 
 		//宣告
 		$adminModel = new AdminModel();
@@ -112,7 +112,7 @@ class AdminController extends Controller
 			'password' => 'required|string|lenMax:32|lenMin:3',
 			'confirm' => 'required|string|lenMax:32|lenMin:3|sameAs:password',
 			'email' => 'required|email',
-			'status' => 'required|in:Y&N',
+			'status' => 'required|in["Y" , "N"]',
 		];
 
 		//驗證
@@ -169,7 +169,7 @@ class AdminController extends Controller
      */
     public function update($id) {
         //驗證權限
-        $this->permission('admin/adminList','E','A');
+	    $this->permission(['A'] , 'admin/adminList' , 'E');
 
 	    //宣告
 	    $adminModel = new AdminModel();
@@ -180,7 +180,7 @@ class AdminController extends Controller
             'password' => 'string|lenMax:32|lenMin:3',
             'confirm' => 'string|lenMax:32|lenMin:3|sameAs:password',//@todo if !isset password
             'name' => 'string',
-            'status' => 'in:Y&N',
+            'status' => 'in["Y" , "N"]',
         ];
 
         //驗證
@@ -223,7 +223,7 @@ class AdminController extends Controller
      */
     public function delete ($id) {
         //驗證權限
-        $this->permission('admin/adminList','E','A');
+	    $this->permission(['A'] , 'admin/adminList' , 'E');
 
 	    //宣告
 	    $adminModel = new AdminModel();

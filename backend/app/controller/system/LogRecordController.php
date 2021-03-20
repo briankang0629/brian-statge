@@ -31,13 +31,13 @@ class LogRecordController extends Controller
      */
     public function lists() {
         //驗證權限
-        $this->permission('logRecord/logRecordList','V','A');
+        $this->permission(['A'] , 'logRecord/logRecordList' , 'V');
 
         //宣告
 	    $logRecordModel = new LogRecordModel();
 
         //取操作記錄列表
-        return publicFunction::json([
+        publicFunction::json([
         	'data' => $logRecordModel->lists(request::$get),
 	        'pagination' => $logRecordModel->getPagination()
 	    ] , 'success');
@@ -51,13 +51,13 @@ class LogRecordController extends Controller
      */
     public function info($id) {
         //驗證權限
-        $this->permission('logRecord/logRecordList','V','A');
+        $this->permission(['A'] , 'logRecord/logRecordList' , 'V');
 
 	    //宣告
 	    $logRecordModel = new LogRecordModel();
 
         //取操作記錄列表
-        return publicFunction::json([
+        publicFunction::json([
             'data' => $logRecordModel->info($id)
         ], 'success');
     }
@@ -99,10 +99,10 @@ class LogRecordController extends Controller
 	 */
 	public function getLogRecordSetting () {
 		//驗證權限
-		$this->permission('logRecord/logRecordList','V','A');
+		$this->permission(['A'] , 'logRecord/logRecordList' , 'V');
 
 		//取操作記錄列表
-		return publicFunction::json([
+		publicFunction::json([
 			'data' => publicFunction::getSystemCode()['logRecordSetting']
 		] , 'success');
 	}

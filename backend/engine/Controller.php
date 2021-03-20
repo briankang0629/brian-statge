@@ -46,15 +46,15 @@ abstract class Controller {
      *
      * 參數說明 :
      *      路徑 $path menu/submenu
-     *      權限 $permission = [E,V] E => 要求寫入權限 , V => 要求查看權限, 同時允許查看權限, N => 無權限 | 順位 : E > V > N
      *      身分 $identity = [S,A,U] S => 系統 , A => 管理者 , U => 會員使用者 | 順位 : S > A > U
+     *      權限 $permission = [E,V] E => 要求寫入權限 , V => 要求查看權限, 同時允許查看權限, N => 無權限 | 順位 : E > V > N
      * @since 0.0.1
      * @version 0.0.1
+     * @param array $identity
      * @param string $path
      * @param string $permission
-     * @param string $identity
      */
-    protected function permission( $path, $permission = '', $identify = '' ) {
+    protected function permission( $identify = [] , $path = '' , $permission = '' ) {
         //取得路徑
         $route = explode('/', $path);
 
@@ -63,13 +63,24 @@ abstract class Controller {
             publicFunction::error('9999-2', '', 999);
         }
 
-        //開始身份驗證 -> 要求管理者身份請求卻是會員
-        if(($identify == 'A') && (Identity == 'user')) {
-            publicFunction::error('9999-3', '', 999);
+        //開始身份驗證
+        switch (Identity) {
+            case 'user':
+                $class = 'U';
+                break;
+            case 'admin':
+                $class = 'A';
+                break;
+            case 'super':
+                $class = 'S';
+                break;
+            default:
+                publicFunction::error('9999-3', '', 999);
+                break;
         }
 
-        //開始身份驗證 -> 要求系統身份請求卻是管理者或會員
-        if(($identify == 'S') && (in_array(Identity, ['user','admin']))) {
+        //請求的身份未開放
+        if(!in_array($class, $identify)) {
             publicFunction::error('9999-4', '', 999);
         }
 

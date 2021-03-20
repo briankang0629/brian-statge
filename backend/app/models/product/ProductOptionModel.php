@@ -154,6 +154,23 @@ class ProductOptionModel extends Model {
     }
 
     /**
+     * getProductOptionDetailByLanguage 依ID取商品選項及語系詳細資料
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param int $productOptionId
+     * @param string $language
+     * @return mixed
+     */
+    public function getProductOptionDetailByLanguage( $productOptionId , $language = 'zh-tw') {
+        return $this->db->table('productOptionDetail')->select(['name' , 'language'])->where([
+            ['productOptionId' , ' = ' , $productOptionId],
+            ['language' , ' = ' , $language],
+        ])->row;
+    }
+
+
+    /**
      * getProductOptionValue 依ID取商品選項值詳細資料
      *
      * @since 0.0.1
@@ -175,6 +192,22 @@ class ProductOptionModel extends Model {
      */
     public function getProductOptionValueDetail( $productOptionValueId ) {
         return $this->db->table('productOptionValueDetail')->select(['language' , 'name'])->where(['productOptionValueId' , ' = ' , $productOptionValueId])->rows;
+    }
+
+    /**
+     * getProductOptionValueDetailByLanguage 依商品選項值ID及語系取詳細資料
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     * @param int $productOptionValueId
+     * @param string $language
+     * @return mixed
+     */
+    public function getProductOptionValueDetailByLanguage( $productOptionValueId , $language = 'zh-tw') {
+        return $this->db->table('productOptionValueDetail')->select(['language' , 'name'])->where([
+            ['productOptionValueId' , ' = ' , $productOptionValueId],
+            ['language' , ' = ' , $language],
+        ])->row;
     }
 
 	/**

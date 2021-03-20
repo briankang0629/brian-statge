@@ -139,7 +139,6 @@
                 if(this.method === 'edit') {
                     return Promise.all([
                         this.edit(this.$route.params.id),
-                        this.getPermissionConfig()
                     ])
                 } else {
                     return Promise.all([
@@ -188,7 +187,7 @@
 
                 this.$store.dispatch('authRequest', request).then((response) => {
                     this.permission = response.data
-
+                    this.permissionConfig = response.data.permission
                     this.isLoading = false
                 }).catch((error) => {
 	                this.$root.notify(error)

@@ -31,13 +31,13 @@ class UserController extends Controller
      */
     public function lists() {
         //驗證權限
-        $this->permission('user/userList','V','A');
+        $this->permission(['A'] , 'user/userList' , 'V');
 
         //宣告
 	    $userModel = new UserModel();
 
 	    //取會員列表
-        return publicFunction::json([
+        publicFunction::json([
         	'data' => $userModel->lists(request::$get),
         	'pagination' =>  $userModel->getPagination()
         ] , 'success');
@@ -51,7 +51,7 @@ class UserController extends Controller
      */
     public function info($id) {
         //驗證權限
-        $this->permission('user/userList','V','A');
+	    $this->permission(['A'] , 'user/userList' , 'V');
 
 	    //宣告
 	    $userModel = new UserModel();
@@ -60,7 +60,7 @@ class UserController extends Controller
         if(!$user = $userModel->info($id)) { return publicFunction::emptyOutput(); }
 
         //回傳
-        return publicFunction::json([
+        publicFunction::json([
         	'data' => $user
         ] , 'success');
     }
@@ -73,7 +73,7 @@ class UserController extends Controller
 	 */
 	public function store() {
         //驗證權限
-        $this->permission('user/userList','E','A');
+		$this->permission(['A'] , 'user/userList' , 'E');
 
 		//宣告
 		$userModel = new UserModel();
@@ -86,7 +86,7 @@ class UserController extends Controller
 			'password' => 'required|string|lenMax:32|lenMin:3',
 			'confirm' => 'required|string|lenMax:32|lenMin:3|sameAs:password',
 			'email' => 'required|email',
-			'status' => 'required|in:Y&N',
+			'status' => 'required|in["Y" , "N"]',
 		];
 
 		//驗證
@@ -142,7 +142,7 @@ class UserController extends Controller
      */
     public function update($id) {
         //驗證權限
-        $this->permission('user/userList','E','A');
+	    $this->permission(['A'] , 'user/userList' , 'E');
 
 	    //宣告
 	    $userModel = new UserModel();
@@ -154,7 +154,7 @@ class UserController extends Controller
             'confirm' => 'string|lenMax:32|lenMin:3|sameAs:password',//@todo if !isset password
             'name' => 'string',
             'mobile' => 'string|lenMax:10',
-            'status' => 'in:Y&N',
+            'status' => 'in["Y" , "N"]',
         ];
 
         //驗證
@@ -198,7 +198,7 @@ class UserController extends Controller
      */
     public function delete ($id) {
         //驗證權限
-        $this->permission('user/userList','E','A');
+	    $this->permission(['A'] , 'user/userList' , 'E');
 
 	    //宣告
 	    $userModel = new UserModel();
@@ -210,12 +210,49 @@ class UserController extends Controller
 	    $this->writeLog(3 , [] , $userModel->db->getSql());
 
         //回傳
-        return publicFunction::json([
+        publicFunction::json([
             'status' => 'success',
             'msg' => language::getFile()['common']['delete']['success'],
         ]);
     }
     //----------------------------------------------------------------
     //EndRegion API
+    //----------------------------------------------------------------
+
+    //----------------------------------------------------------------
+    // 客製化功能 API Start
+    //----------------------------------------------------------------
+
+    /**
+     * getUserTotal 會員總數
+     *
+     * @since 0.0.1
+     * @version 0.0.1
+     */
+    public function getUserTotal() {
+        //驗證權限
+//        $this->permission(['A'] , 'user/userList' , 'V');
+
+        //宣告
+        $data = [];
+        $userModel = new UserModel();
+        $data['total'] = $userModel->getUserTotal();
+
+        //取會員列表
+        publicFunction::json([
+            'data' => $data,
+        ] , 'success');
+    }
+
+    //----------------------------------------------------------------
+    // 客製化功能 API End
+    //----------------------------------------------------------------
+
+    //----------------------------------------------------------------
+    // 附屬函示 API Start
+    //----------------------------------------------------------------
+
+    //----------------------------------------------------------------
+    // 附屬函示 API End
     //----------------------------------------------------------------
 }

@@ -35,7 +35,23 @@
         "countImages": "張圖片",
         "image": "圖片",
         "searchBar": "搜尋功能",
+        "export": "匯出CSV",
         "noMore": "沒有更多文章了。"
+    },
+    "chart": {
+        "change": "切換",
+        "line": "線條圖",
+        "bar": "長條圖"
+    },
+    "dashboard": {
+        "orderCount": "訂單數量",
+        "userCount": "用戶數量",
+        "userRegisterCount": "新用戶註冊數量",
+        "saleCount": "銷售總覽",
+        "saleRecord": "銷售紀錄",
+        "productView": "商品觀看數",
+        "seeMore": "查看更多",
+        "": ""
     },
     "account": {
         "login": "登入",
@@ -121,6 +137,7 @@
         "productSpecification": "商品規格",
         "selectMsg": "請選擇",
         "sortOrder": "排序",
+        "view": "觀看數",
         "": ""
     },
     "productOption": {
@@ -138,6 +155,27 @@
     },
     "productSpecification": {
 
+    },
+    "report": {
+        "saleReport": {
+            "time": "時間",
+            "orderCount": "訂單數量",
+            "saleTotal": "銷售金額",
+            "handingFee": "手續費",
+            "shipping": "運費",
+            "cashPay": "現金付款",
+            "creditPay": "信用卡付款",
+            "ATMPay": "ATM轉帳",
+            "operate": "操作",
+            "startDate": "開始日期",
+            "endDate": "結束日期",
+            "orderStatus": "訂單狀態",
+            "timeType": "時間類型",
+            "commission": "抽取傭金",
+            "sumTotal": "小計",
+            "": ""
+        },
+        "orderReport": {}
     },
     "logRecord": {
         "logRecordId": "操作日誌ID",
@@ -184,12 +222,19 @@
         "A": "管理者",
         "U": "用戶端"
     },
-    "cashRecordStatus": {
-        "Y": "成功",
+    "orderStatus": {
+        "Y": "已完成",
         "N": "取消",
         "U": "未審核",
-        "R": "拒絕交易",
-        "C": "系統取消"
+        "R": "拒絕訂單",
+        "P": "付款中",
+        "C": "取消訂單"
+    },
+    "dateRange": {
+        "year": "年報表",
+        "season": "季報表",
+        "month": "月報表",
+        "day": "日報表"
     },
     "cashRecordOrderType": {
         "credit": "信用卡支付",
@@ -228,6 +273,7 @@
         "orderStatus": "訂單狀態",
         "report": "報表管理",
         "saleReport": "銷售報表",
+        "orderReport": "訂單報表",
         "system": "系統管理",
         "setting": "設定",
         "media": "多媒體",

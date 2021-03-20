@@ -31,7 +31,7 @@ class PermissionController extends Controller
      */
     public function lists() {
         //驗證權限
-        $this->permission('admin/permission','V','A');
+        $this->permission(['A'] , 'admin/permission' , 'V');
 
 	    //宣告
 	    $data = [];
@@ -48,7 +48,7 @@ class PermissionController extends Controller
         }
 
         //回傳
-        return publicFunction::json([
+        publicFunction::json([
         	'data' => $data,
 	        'pagination' => $permissionModel->getPagination()
         ] , 'success');
@@ -62,7 +62,7 @@ class PermissionController extends Controller
      */
     public function info($id) {
         //驗證權限
-        $this->permission('admin/permission','V','A');
+	    $this->permission(['A'] , 'admin/permission' , 'V');
 
 	    //宣告
 	    $permissionModel = new PermissionModel();
@@ -71,7 +71,7 @@ class PermissionController extends Controller
 	    if(!$permission = $permissionModel->info($id)) { return publicFunction::emptyOutput(); }
 
         //回傳
-        return publicFunction::json([
+        publicFunction::json([
         	'data' => $permission
         ] , 'success');
     }
@@ -84,7 +84,7 @@ class PermissionController extends Controller
 	 */
 	public function store() {
         //驗證權限
-        $this->permission('admin/permission','E','A');
+		$this->permission(['A'] , 'admin/permission' , 'E');
 
 		//宣告
 		$permissionModel = new PermissionModel();
@@ -93,7 +93,7 @@ class PermissionController extends Controller
 		$require = [
 			'name' => 'required|string',
 			'permission' => 'required|string',
-			'status' => 'required|in:Y&N',
+			'status' => 'required|in["Y" , "N"]',
 		];
 
 		//驗證
@@ -136,7 +136,7 @@ class PermissionController extends Controller
      */
     public function update($id) {
         //驗證權限
-        $this->permission('admin/permission','E','A');
+	    $this->permission(['A'] , 'admin/permission' , 'E');
 
 	    //宣告
 	    $permissionModel = new PermissionModel();
@@ -145,7 +145,7 @@ class PermissionController extends Controller
         $require = [
             'name' => 'required|string',
             'permission' => 'required|string',
-            'status' => 'required|in:Y&N',
+            'status' => 'required|in["Y" , "N"]',
         ];
 
         //驗證
@@ -181,7 +181,7 @@ class PermissionController extends Controller
      */
     public function delete ($id) {
         //驗證權限
-        $this->permission('admin/permission','E','A');
+	    $this->permission(['A'] , 'admin/permission' , 'E');
 
 	    //宣告
 	    $permissionModel = new PermissionModel();
@@ -193,7 +193,7 @@ class PermissionController extends Controller
 	    $this->writeLog(9 , [] , $permissionModel->db->getSql());
 
 	    //回傳
-        return publicFunction::json([
+        publicFunction::json([
             'status' => 'success',
             'msg' => language::getFile()['common']['delete']['success'],
         ]);

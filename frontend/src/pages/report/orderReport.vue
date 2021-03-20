@@ -130,7 +130,7 @@
                                 <td>{{data.createTime}}</td>
                                 <td>
                                     <a class="btn btn-primary" @click="view(data.logRecordId)"><i
-                                            class="fas fa-eye"></i>
+                                        class="fas fa-eye"></i>
                                         {{ $t('common.view') }}</a>
                                 </td>
                             </tr>
@@ -145,11 +145,11 @@
                     <div class="card-footer">
                         <ul class="float-right">
                             <b-pagination
-                                    v-model="pagination.page"
-                                    :total-rows="pagination.total"
-                                    :per-page="pagination.perPage"
-                                    aria-controls="my-table"
-                                    @input="getLogRecord()"
+                                v-model="pagination.page"
+                                :total-rows="pagination.total"
+                                :per-page="pagination.perPage"
+                                aria-controls="my-table"
+                                @input="getLogRecord()"
                             ></b-pagination>
                         </ul>
                     </div>
@@ -189,13 +189,13 @@
                                     </div>
                                 </div>
                                 <!--<div class="form-group row text-left">-->
-                                    <!--<label for="content" class="col-sm-3">{{ $t('logRecord.content') }} : </label>-->
-                                    <!--<div class="col-sm-9">-->
-                                        <!--<span class="" id="content" v-for=" (value,key) in logRecord.content"-->
-                                              <!--:key="key">-->
-                                            <!--{{ key }} : {{ value }}  <hr style="color:#999;"/>-->
-                                        <!--</span>-->
-                                    <!--</div>-->
+                                <!--<label for="content" class="col-sm-3">{{ $t('logRecord.content') }} : </label>-->
+                                <!--<div class="col-sm-9">-->
+                                <!--<span class="" id="content" v-for=" (value,key) in logRecord.content"-->
+                                <!--:key="key">-->
+                                <!--{{ key }} : {{ value }}  <hr style="color:#999;"/>-->
+                                <!--</span>-->
+                                <!--</div>-->
                                 <!--</div>-->
                                 <div class="form-group row text-left">
                                     <label for="host" class="col-sm-3">{{ $t('logRecord.host') }} : </label>
@@ -238,146 +238,146 @@
 </template>
 
 <script>
-    export default {
-        layout: 'admin',
-        data() {
-            return {
-                //分頁
-                pagination: {
-                    page: 1,
-                    perPage: 10,
-                    total: 0,
-                    totalPage: 0,
-                },
-                //操作日誌列表
-                logRecordList: {},
-                //操作日誌
-                logRecord: {
-                    content: '',
-                    serverInfo: '',
-                },
-                //請求參數
-                sentData: {
-                    account: '',
-                    class: '',
-                    logId: '',
-                    startDate: this.$dateTime.nowDate(),
-                    endDate: this.$dateTime.tomorrow(),
-                },
-                //方法
-                method: '',
-                //是否loading
-                isLoading: false,
-                //傳送時間格式
-                dateConfig: this.$calendar.date(),
-                //狀態class
-                classStatus: (status) => [
-                    {'bg-success': status === 'S'},
-                    {'bg-info': status === 'A'},
-                    {'bg-warning': status === 'U'}
-                ],
-                //操作類型初始設定
-                logRecordSetting: {
-                    1: {'type': '', 'class': ''}
-                },
-            }
-        },
-        computed: {},
-        mounted() {
-            this.init();
-        },
-        methods: {
-
-            /**
-             * init 初始化
-             *
-             * @since 0.0.1
-             * @version 0.0.1
-             */
-            init() {
-                return Promise.all([
-                    this.getLogRecord(),
-                    this.getLogRecordSetting()
-                ])
+export default {
+    layout: 'admin',
+    data() {
+        return {
+            //分頁
+            pagination: {
+                page: 1,
+                perPage: 10,
+                total: 0,
+                totalPage: 0,
             },
-
-            /**
-             * getLogRecord 取操作日誌
-             *
-             * @since 0.0.1
-             * @version 0.0.1
-             */
-            getLogRecord() {
-                this.isLoading = true
-                const request = {
-                    method: 'get',
-                    url: '/api/logRecord',
-                    params: {
-                        page: this.pagination.page,
-                        perPage: this.pagination.perPage,
-                    }
-                }
-
-                if (this.sentData.account !== '') request.params.account = this.sentData.account
-                if (this.sentData.class !== '') request.params.class = this.sentData.class
-                if (this.sentData.logId !== '') request.params.logId = this.sentData.logId
-                if (this.sentData.startDate !== '') request.params.startDate = this.sentData.startDate
-                if (this.sentData.endDate !== '') request.params.endDate = this.sentData.endDate
-
-                this.$store.dispatch('authRequest', request).then((response) => {
-                    this.logRecordList = response.data
-                    this.pagination.page = response.pagination.page
-                    this.pagination.perPage = response.pagination.perPage
-                    this.pagination.total = response.pagination.total
-                    this.pagination.totalPage = response.pagination.totalPage
-                    this.isLoading = false
-                }).catch((error) => {
-	                this.$root.notify(error)
-                })
+            //操作日誌列表
+            logRecordList: {},
+            //操作日誌
+            logRecord: {
+                content: '',
+                serverInfo: '',
             },
-
-            /**
-             * getLogRecordSetting 取操作記錄代碼
-             *
-             * @since 0.0.1
-             * @version 0.0.1
-             */
-            getLogRecordSetting() {
-                const request = {
-                    method: 'get',
-                    url: '/api/logRecord/getLogRecordSetting',
-                }
-
-                this.$store.dispatch('authRequest', request).then((response) => {
-                    this.logRecordSetting = response.data;
-                }).catch((error) => {
-	                this.$root.notify(error)
-                })
+            //請求參數
+            sentData: {
+                account: '',
+                class: '',
+                logId: '',
+                startDate: this.$dateTime.nowDate(),
+                endDate: this.$dateTime.tomorrow(),
             },
-
-            /**
-             * view 檢視詳細操作日誌
-             *
-             * @param logRecordId
-             * @since 0.0.1
-             * @version 0.0.1
-             */
-            view(logRecordId) {
-                const request = {
-                    method: 'get',
-                    url: '/api/logRecord/' + logRecordId,
-                }
-
-                this.$store.dispatch('authRequest', request).then((response) => {
-                    this.logRecord = response.data
-                    this.method = 'view'
-                    this.$refs['logRecordEdit'].show();
-                    this.logRecord.name = this.logRecordSetting[this.logRecord.logId]['class'];
-
-                }).catch((error) => {
-	                this.$root.notify(error)
-                })
+            //方法
+            method: '',
+            //是否loading
+            isLoading: false,
+            //傳送時間格式
+            dateConfig: this.$calendar.date(),
+            //狀態class
+            classStatus: (status) => [
+                {'bg-success': status === 'S'},
+                {'bg-info': status === 'A'},
+                {'bg-warning': status === 'U'}
+            ],
+            //操作類型初始設定
+            logRecordSetting: {
+                1: {'type': '', 'class': ''}
             },
         }
+    },
+    computed: {},
+    mounted() {
+        this.init();
+    },
+    methods: {
+
+        /**
+         * init 初始化
+         *
+         * @since 0.0.1
+         * @version 0.0.1
+         */
+        init() {
+            return Promise.all([
+                this.getLogRecord(),
+                this.getLogRecordSetting()
+            ])
+        },
+
+        /**
+         * getLogRecord 取操作日誌
+         *
+         * @since 0.0.1
+         * @version 0.0.1
+         */
+        getLogRecord() {
+            this.isLoading = true
+            const request = {
+                method: 'get',
+                url: '/api/logRecord',
+                params: {
+                    page: this.pagination.page,
+                    perPage: this.pagination.perPage,
+                }
+            }
+
+            if (this.sentData.account !== '') request.params.account = this.sentData.account
+            if (this.sentData.class !== '') request.params.class = this.sentData.class
+            if (this.sentData.logId !== '') request.params.logId = this.sentData.logId
+            if (this.sentData.startDate !== '') request.params.startDate = this.sentData.startDate
+            if (this.sentData.endDate !== '') request.params.endDate = this.sentData.endDate
+
+            this.$store.dispatch('authRequest', request).then((response) => {
+                this.logRecordList = response.data
+                this.pagination.page = response.pagination.page
+                this.pagination.perPage = response.pagination.perPage
+                this.pagination.total = response.pagination.total
+                this.pagination.totalPage = response.pagination.totalPage
+                this.isLoading = false
+            }).catch((error) => {
+                this.$root.notify(error)
+            })
+        },
+
+        /**
+         * getLogRecordSetting 取操作記錄代碼
+         *
+         * @since 0.0.1
+         * @version 0.0.1
+         */
+        getLogRecordSetting() {
+            const request = {
+                method: 'get',
+                url: '/api/logRecord/getLogRecordSetting',
+            }
+
+            this.$store.dispatch('authRequest', request).then((response) => {
+                this.logRecordSetting = response.data;
+            }).catch((error) => {
+                this.$root.notify(error)
+            })
+        },
+
+        /**
+         * view 檢視詳細操作日誌
+         *
+         * @param logRecordId
+         * @since 0.0.1
+         * @version 0.0.1
+         */
+        view(logRecordId) {
+            const request = {
+                method: 'get',
+                url: '/api/logRecord/' + logRecordId,
+            }
+
+            this.$store.dispatch('authRequest', request).then((response) => {
+                this.logRecord = response.data
+                this.method = 'view'
+                this.$refs['logRecordEdit'].show();
+                this.logRecord.name = this.logRecordSetting[this.logRecord.logId]['class'];
+
+            }).catch((error) => {
+                this.$root.notify(error)
+            })
+        },
     }
+}
 </script>

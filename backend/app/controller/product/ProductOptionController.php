@@ -67,7 +67,7 @@ class ProductOptionController extends Controller {
 	 */
 	public function delete( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$productOptionModel = new ProductOptionModel();
@@ -113,7 +113,7 @@ class ProductOptionController extends Controller {
 	 */
 	public function deleteProductOptionValue( $id ) {
 		//驗證權限
-		$this->permission('product/productList' , 'E' , 'A');
+		$this->permission(['A'] , 'product/productList' , 'E');
 
 		//宣告
 		$productOptionModel = new ProductOptionModel();

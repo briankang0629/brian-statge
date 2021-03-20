@@ -34,16 +34,16 @@ class ProductCategoryController extends Controller
      */
     public function lists () {
         //驗證權限
-        $this->permission('product/productCategory', 'V', 'A');
+        $this->permission(['A'], 'product/productCategory', 'V');
 
         //宣告
         $data = [];
         $productCategoryModel = new ProductCategoryModel();
 
-        //取權限列表
+        //取商品分類列表
         $productCategories = $productCategoryModel->lists(request::$get);
 
-        //計算該權限下有多少管理者
+        //計算該商品分類下有多少管理者
         foreach ($productCategories as $key => $productCategory) {
             //計算商品歸類數
             $productCategory['productCount'] = $productCategoryModel->getProductByProductCategoryId($productCategory['productCategoryId'])->count;
@@ -58,21 +58,21 @@ class ProductCategoryController extends Controller
         }
 
         //回傳
-        return publicFunction::json([
+        publicFunction::json([
             'data'       => $data,
             'pagination' => $productCategoryModel->getPagination()
         ], 'success');
     }
 
     /**
-     * info 權限資訊
+     * info 商品分類資訊
      *
      * @since 0.0.1
      * @version 0.0.1
      */
     public function info ($id) {
         //驗證權限
-        $this->permission('product/productCategory', 'V', 'A');
+        $this->permission(['A'], 'product/productCategory', 'V');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
@@ -84,7 +84,7 @@ class ProductCategoryController extends Controller
         $productCategory['detail'] = $productCategoryModel->getProductCategoryDetail($id);
 
         //取權限資訊
-        return publicFunction::json([
+        publicFunction::json([
             'data' => $productCategory
         ], 'success');
     }
@@ -97,7 +97,7 @@ class ProductCategoryController extends Controller
      */
     public function store () {
         //驗證權限
-        $this->permission('product/productCategory', 'E', 'A');
+        $this->permission(['A'], 'product/productCategory', 'E');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
@@ -106,7 +106,7 @@ class ProductCategoryController extends Controller
         $require = [
             'name'            => 'required|string',
             'productCategory' => 'required|string',
-            'status'          => 'required|in:Y&N',
+            'status'          => 'required|in["Y" , "N"]',
         ];
 
         //驗證
@@ -149,7 +149,7 @@ class ProductCategoryController extends Controller
      */
     public function update ($id) {
         //驗證權限
-        $this->permission('product/productCategory', 'E', 'A');
+        $this->permission(['A'], 'product/productCategory', 'E');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
@@ -158,7 +158,7 @@ class ProductCategoryController extends Controller
         $require = [
             'name'            => 'required|string',
             'productCategory' => 'required|string',
-            'status'          => 'required|in:Y&N',
+            'status'          => 'required|in["Y" , "N"]',
         ];
 
         //驗證
@@ -194,7 +194,7 @@ class ProductCategoryController extends Controller
      */
     public function delete ($id) {
         //驗證權限
-        $this->permission('product/productCategory', 'E', 'A');
+        $this->permission(['A'], 'product/productCategory', 'E');
 
         //宣告
         $productCategoryModel = new ProductCategoryModel();
@@ -210,29 +210,135 @@ class ProductCategoryController extends Controller
         $this->writeLog(9, [], $productCategoryModel->db->getSql());
 
         //回傳
-        return publicFunction::json([
+        publicFunction::json([
             'status' => 'success',
             'msg'    => language::getFile()['common']['delete']['success'],
-        ]);
-    }
-
-    /**
-     * getProductCategoryConfig 依系統預設權限
-     *
-     * @since 0.0.1
-     * @version 0.0.1
-     * @return mixed
-     */
-    public function getProductCategoryConfig () {
-        return publicFunction::json([
-            'status' => 'success',
-            'data'   => publicFunction::getSystemCode()['productCategory'],
         ]);
     }
 
     //----------------------------------------------------------------
     //EndRegion API
     //----------------------------------------------------------------
+
+	//----------------------------------------------------------------
+	// 客製化功能 API Start
+	//----------------------------------------------------------------
+
+	/**
+	 * getProductCategories 取商品分類列表
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @return mixed
+	 */
+	public function getProductCategories () {
+		//驗證權限
+		$this->permission(['U']);
+
+		//宣告
+		$data = [];
+		$productCategoryModel = new ProductCategoryModel();
+
+		//取商品分類列表
+		$productCategories = $productCategoryModel->lists(request::$get);
+		foreach($productCategories as $key => $item) {
+			//第一層母選單
+			if($item['parentId'] === 0) {
+				$parentProductCategories[] = $item;
+			} else {
+				$subProductCategories[] = $item;
+			}
+		}
+
+		//製作分類樹狀結構
+		foreach($parentProductCategories as $key => $category) {
+			//製作子選單
+			$category['sub'] = $this->makeProductCategoryTree($subProductCategories , $category['productCategoryId']);
+
+			//存進資料內
+			$data[] = $category;
+		}
+
+		//回傳
+		publicFunction::json([
+			'status' => 'success',
+			'data'   => $data,
+		]);
+	}
+
+    /**
+     * getProductCategory 取指定商品分類
+     *
+     * @param int $productCategoryId
+     * @since 0.0.1
+     * @version 0.0.1
+     */
+    public function getProductCategory( $productCategoryId ) {
+        //驗證權限
+        $this->permission(['U']);
+
+        //驗證參數
+        validator::make(request::$get, [
+            'language' => 'required|in' . json_encode(publicFunction::getSystemCode()['language'])
+        ]);
+
+        //宣告
+        $productCategoryModel = new ProductCategoryModel();
+
+        //商品分類資料
+        $data = $productCategoryModel->info($productCategoryId);
+
+        //取商品詳細資料
+        $data['detail'] = $productCategoryModel->getProductCategoryDetailByLanguage($productCategoryId , request::$get['language']);
+
+        //取商品列表
+        publicFunction::json([
+            'data' => $data ,
+        ] , 'success');
+    }
+
+    /**
+     * getProductCategoryTree 取商品分類的家族樹
+     *
+     * @param int $productCategoryId
+     * @since 0.0.1
+     * @version 0.0.1
+     */
+    public function getProductCategoryTree( $productCategoryId ) {
+        //驗證權限
+        $this->permission(['U']);
+
+        //驗證參數
+        validator::make(request::$get, [
+            'language' => 'required|in' . json_encode(publicFunction::getSystemCode()['language'])
+        ]);
+
+        //宣告
+        $data = [];
+        $productCategoryModel = new ProductCategoryModel();
+
+        //S ==================== 商品分類處理 ==================== //
+        //製作分類麵包穴導覽
+        foreach (json_decode($productCategoryModel->info($productCategoryId)['family'] , true) as $key => $categoryId) {
+            //取商品詳細資料
+            $productCategory = $productCategoryModel->info($categoryId);
+            $productCategory['detail'] = $productCategoryModel->getProductCategoryDetailByLanguage($productCategory['productCategoryId'] , request::$get['language']);
+
+            //存進家族樹內
+            $data[] = $productCategory;
+        }
+
+        //E ==================== 商品分類處理 ==================== //
+
+        //取商品列表
+        publicFunction::json([
+            'data' => $data ,
+        ] , 'success');
+    }
+
+	//----------------------------------------------------------------
+	// 客製化功能 API End
+	//----------------------------------------------------------------
 
     //----------------------------------------------------------------
     //Start 附屬函示
@@ -261,6 +367,28 @@ class ProductCategoryController extends Controller
 
         return $category['name'];
     }
+
+	/**
+	 * makeProductCategoryTree 依據商品分類製作家族數
+	 *
+	 * @since 0.0.1
+	 * @version 0.0.1
+	 * @param array $categories
+	 * @param int $parentId
+	 * @return mixed
+	 */
+	private function makeProductCategoryTree ($categories , $parentId = 0) {
+		$tempArray = [];
+		foreach ($categories as $key => $category) {
+			if($category['parentId'] == $parentId) {
+				unset($categories[$key]);
+				$category['sub'] = $this->makeProductCategoryTree($categories , $category['productCategoryId']);
+				$tempArray[] = $category;
+			}
+		}
+
+		return $tempArray;
+	}
 
     //----------------------------------------------------------------
     //End 附屬函示

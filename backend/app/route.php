@@ -29,6 +29,9 @@ $router->mount('/api', function () use ($router) {
         $router->post('/store', 'UserController@store');
         $router->put('/update/(\d+)', 'UserController@update');
 	    $router->delete('/([\d+,]*)', 'UserController@delete');
+
+        //銷售總額 @todo此功能屬於首頁數據模組
+        $router->get('/report/total', 'UserController@getUserTotal');
     });
 
     //userGroup
@@ -72,6 +75,21 @@ $router->mount('/api', function () use ($router) {
         $router->put('/update/(\d+)', 'ProductController@update');
         $router->delete('/([\d+,]*)', 'ProductController@delete');
 
+        //S ============== 客製化 ================ //
+        //取商品觀看數@todo此功能屬於首頁數據模組
+        $router->get('/view', 'ProductController@getProductViewed');
+
+        //取商品熱銷排行
+        $router->get('/sale/hot', 'ProductController@getSaleHotProduct');
+
+        //依商品分類取商品
+        $router->get('/getProductByCategory/(\d+)', 'ProductController@getProductByCategory');
+
+        //會員端依商品ID取商品
+        $router->get('/getProduct/(\d+)', 'ProductController@getProduct');
+
+        //E ============== 客製化 ================ //
+
         //category
         $router->mount('/category', function () use ($router) {
             //基本五大接口
@@ -80,6 +98,18 @@ $router->mount('/api', function () use ($router) {
             $router->post('/store', 'ProductCategoryController@store');
             $router->put('/update/(\d+)', 'ProductCategoryController@update');
             $router->delete('/([\d+,]*)', 'ProductCategoryController@delete');
+
+            //S ============== 客製化 ================ //
+            //取客戶端的商品分類列表
+	        $router->get('/getProductCategories', 'ProductCategoryController@getProductCategories');
+
+	        //會員端取指定商品分類
+	        $router->get('/getProductCategory/(\d+)', 'ProductCategoryController@getProductCategory');
+
+	        //會員端取商品分類家族數
+            $router->get('/tree/(\d+)', 'ProductCategoryController@getProductCategoryTree');
+
+            //E ============== 客製化 ================ //
         });
 
 	    //option
@@ -142,6 +172,23 @@ $router->mount('/api', function () use ($router) {
 		});
 
 	});
+
+    //order
+    $router->mount('/order', function () use ($router) {
+        //月報表（線圖）@todo此功能屬於首頁數據模組
+        $router->get('/report/groupBy/month', 'OrderController@getOrderGroupByMonth');
+        //訂單總量 @todo此功能屬於首頁數據模組
+        $router->get('/report/total', 'OrderController@getOrderTotal');
+        //銷售總額 @todo此功能屬於首頁數據模組
+        $router->get('/report/sale', 'OrderController@getOrderSale');
+    });
+
+
+    //report 報表
+    $router->mount('/report', function () use ($router) {
+        //月報表（線圖）@todo此功能屬於首頁數據模組
+        $router->get('/saleReport', 'SaleReportController@getSaleReport');
+    });
 });
 
 //middleware
